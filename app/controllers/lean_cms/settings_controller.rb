@@ -82,6 +82,17 @@ module LeanCms
       redirect_to lean_cms_settings_path, notice: 'Settings updated successfully.'
     end
 
+    def lock
+      reason = params[:reason].presence || 'Content sync in progress'
+      LeanCms::Setting.lock_content!(reason)
+      redirect_to lean_cms_settings_path, notice: "Content editing locked: #{reason}"
+    end
+
+    def unlock
+      LeanCms::Setting.unlock_content!
+      redirect_to lean_cms_settings_path, notice: 'Content editing unlocked. Editors can now make changes.'
+    end
+
     # AJAX endpoint to toggle override settings
     def update_override
       allowed_keys = %w[contact_info_override contact_hours_override]

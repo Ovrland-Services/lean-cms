@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Content Sync card in Settings page showing live lock status with lock/unlock buttons and reason field
+- Lock status banner in the CMS admin layout — displayed prominently across all pages when content is locked, with an inline Unlock button
+
 ### Fixed
 - Register `app/javascript` with Propshaft's asset load path so Stimulus controllers are served correctly in production
+- Content lock enforcement now also covers `update_field` and `undo_field` inline editing actions (previously only `update` was blocked)
 
 ## [0.1.0] - 2026-02-21
 
