@@ -1,0 +1,15 @@
+<% if field&.rich_text? %>
+  <%# Rich text content %>
+  <% if can_edit_cms? && field %>
+    <%= content_tag(:div, raw(value), html_options.merge(class: css_classes, data: data_attributes)) %>
+  <% else %>
+    <%= raw(value) %>
+  <% end %>
+<% else %>
+  <%# Regular text content %>
+  <% if can_edit_cms? && field %>
+    <%= content_tag(tag, value, html_options.merge(class: css_classes, data: data_attributes)) %>
+  <% else %>
+    <%= content_tag(tag, value, html_options) %>
+  <% end %>
+<% end %>

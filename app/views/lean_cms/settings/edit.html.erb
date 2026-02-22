@@ -1,0 +1,301 @@
+<div class="max-w-4xl">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">CMS Settings</h1>
+    <p class="text-gray-600 mt-2">Configure your LeanCMS preferences</p>
+  </div>
+
+  <%= form_with url: lean_cms_settings_path, method: :patch, class: "space-y-6" do |f| %>
+
+    <!-- Display Options -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Display Options</h2>
+
+      <div class="space-y-4" data-controller="settings-inline-edit-sync">
+        <!-- In-Context Editing Toggle -->
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <%= check_box_tag 'in_context_editing', '1', @in_context_editing_enabled,
+                class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2",
+                data: { 
+                  settings_inline_edit_sync_target: "checkbox",
+                  action: "change->settings-inline-edit-sync#toggle"
+                } %>
+          </div>
+          <div class="ml-3">
+            <label for="in_context_editing" class="font-medium text-gray-900">
+              Enable In-Context Editing
+            </label>
+            <p class="text-sm text-gray-600 mt-1">
+              Show edit overlays when hovering over sections on the frontend. This allows you to quickly jump to the edit page for any section directly from the website. Changes here sync with the toggle in the admin bar.
+            </p>
+          </div>
+        </div>
+
+        <!-- Show Blog Toggle -->
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <%= check_box_tag 'show_blog', '1', @show_blog_enabled,
+                class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2" %>
+          </div>
+          <div class="ml-3 flex-1">
+            <label for="show_blog" class="font-medium text-gray-900">
+              Show Blog
+            </label>
+            <p class="text-sm text-gray-600 mt-1">
+              Display the Blog link in navigation. 
+              <span class="font-semibold"><%= @blog_count %> published <%= 'post'.pluralize(@blog_count) %></span>
+              <%= link_to "Manage", lean_cms_posts_path(content_type: 'blog'), 
+                  class: "text-[#b82025] hover:underline ml-2", target: "_blank" %>
+            </p>
+            <div class="ml-7 mt-3 space-y-3 pl-3 border-l-2 border-gray-200">
+              <%= label_tag :blog_title, "Page Title", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= text_field_tag :blog_title, @blog_title,
+                  placeholder: "Our Blog",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+              <%= label_tag :blog_subtitle, "Subtitle", class: "block text-sm font-medium text-gray-700 mb-1 mt-2" %>
+              <%= text_field_tag :blog_subtitle, @blog_subtitle,
+                  placeholder: "Insights, updates, and stories from Custom Assembly Services",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Show Portfolio Toggle -->
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <%= check_box_tag 'show_portfolio', '1', @show_portfolio_enabled,
+                class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2" %>
+          </div>
+          <div class="ml-3 flex-1">
+            <label for="show_portfolio" class="font-medium text-gray-900">
+              Show Portfolio
+            </label>
+            <p class="text-sm text-gray-600 mt-1">
+              Display the Portfolio link in navigation. 
+              <span class="font-semibold"><%= @portfolio_count %> published <%= 'item'.pluralize(@portfolio_count) %></span>
+              <%= link_to "Manage", lean_cms_posts_path(content_type: 'portfolio'), 
+                  class: "text-[#b82025] hover:underline ml-2", target: "_blank" %>
+            </p>
+            <div class="ml-7 mt-3 space-y-3 pl-3 border-l-2 border-gray-200">
+              <%= label_tag :portfolio_title, "Page Title", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= text_field_tag :portfolio_title, @portfolio_title,
+                  placeholder: "Our Portfolio",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+              <%= label_tag :portfolio_subtitle, "Subtitle", class: "block text-sm font-medium text-gray-700 mb-1 mt-2" %>
+              <%= text_field_tag :portfolio_subtitle, @portfolio_subtitle,
+                  placeholder: "Showcasing our industrial assembly and installation projects",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Site Information -->
+    <div id="site-info" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 scroll-mt-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Site Information</h2>
+      <p class="text-sm text-gray-600 mb-4">This information is used across the site including the contact page, footer, and schema markup.</p>
+
+      <% address = LeanCms::Setting.site_address_data %>
+      <div class="space-y-4">
+        <!-- Address Fields -->
+        <div>
+          <%= label_tag :site_street1, "Street Address", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= text_field_tag :site_street1, address['street1'],
+              placeholder: "1234 Industrial Parkway",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+        </div>
+
+        <div>
+          <%= label_tag :site_street2, "Street Address 2", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= text_field_tag :site_street2, address['street2'],
+              placeholder: "Suite 100 (optional)",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+        </div>
+
+        <div class="grid grid-cols-6 gap-4">
+          <div class="col-span-3">
+            <%= label_tag :site_city, "City", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= text_field_tag :site_city, address['city'],
+                placeholder: "Green Bay",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          </div>
+
+          <div class="col-span-2">
+            <%= label_tag :site_state, "State", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= text_field_tag :site_state, address['state'],
+                placeholder: "WI",
+                maxlength: 2,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none uppercase" %>
+          </div>
+
+          <div class="col-span-1">
+            <%= label_tag :site_zip, "ZIP", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= text_field_tag :site_zip, address['zip'],
+                placeholder: "54304",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          </div>
+        </div>
+
+        <!-- Phone and Email -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <%= label_tag :site_phone, "Phone", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= text_field_tag :site_phone, LeanCms::Setting.site_phone,
+                placeholder: "(920) 555-0100",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          </div>
+
+          <div>
+            <%= label_tag :site_email, "Email", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= email_field_tag :site_email, LeanCms::Setting.site_email,
+                placeholder: "info@example.com",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Business Hours -->
+    <div id="business-hours" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 scroll-mt-6"
+         data-controller="dynamic-list"
+         data-dynamic-list-max-value="10">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Business Hours</h2>
+      <p class="text-sm text-gray-600 mb-4">Add your business hours. Each row can have its own day label (e.g., "Monday - Thursday", "Friday", etc.).</p>
+
+      <div data-dynamic-list-target="list" class="space-y-3">
+        <% hours = LeanCms::Setting.business_hours['hours'] %>
+        <% hours = [{ 'label' => '', 'value' => '' }] if hours.empty? %>
+        <% hours.each do |hour| %>
+          <div data-list-item class="flex gap-3 items-center">
+            <%= text_field_tag "business_hours_labels[]", hour['label'],
+                placeholder: "e.g., Monday - Friday",
+                class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+            <%= text_field_tag "business_hours_values[]", hour['value'],
+                placeholder: "e.g., 8:00 AM - 5:00 PM",
+                class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+            <button type="button" data-action="dynamic-list#remove"
+                    class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <button type="button" data-action="dynamic-list#add"
+              class="mt-3 inline-flex items-center text-sm font-medium text-[#b82025] hover:text-[#a01c20] transition-colors">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Add Hours Row
+      </button>
+
+      <template data-dynamic-list-target="template">
+        <div data-list-item class="flex gap-3 items-center">
+          <%= text_field_tag "business_hours_labels[]", "",
+              placeholder: "e.g., Monday - Friday",
+              class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          <%= text_field_tag "business_hours_values[]", "",
+              placeholder: "e.g., 8:00 AM - 5:00 PM",
+              class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          <button type="button" data-action="dynamic-list#remove"
+                  class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+      </template>
+
+      <div class="mt-4 pt-4 border-t border-gray-200">
+        <%= label_tag :business_hours_note, "Additional Note", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= text_area_tag :business_hours_note, LeanCms::Setting.business_hours['note'],
+            rows: 2,
+            placeholder: "e.g., Emergency services available 24/7 for existing clients.",
+            class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none resize-none" %>
+      </div>
+    </div>
+
+    <!-- Privacy & Compliance -->
+    <div id="privacy-compliance" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 scroll-mt-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Privacy & Compliance</h2>
+
+      <div class="space-y-4">
+        <!-- Cookie Consent Toggle -->
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <%= hidden_field_tag 'cookie_consent_enabled', '1' if @cookie_consent_forced_on %>
+            <%= check_box_tag 'cookie_consent_enabled', '1', @cookie_consent_enabled,
+                disabled: @cookie_consent_forced_on,
+                class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2 #{'opacity-60 cursor-not-allowed' if @cookie_consent_forced_on}" %>
+          </div>
+          <div class="ml-3 flex-1">
+            <label for="cookie_consent_enabled" class="font-medium text-gray-900">
+              Enable Cookie Consent Banner
+            </label>
+            <p class="text-sm text-gray-600 mt-1">
+              Show a GDPR/CCPA cookie consent banner at the bottom of the site. Visitors can accept all, reject optional cookies, or manage preferences.
+            </p>
+            <% if @cookie_consent_forced_on %>
+              <p class="text-sm text-amber-700 mt-2 font-medium">
+                Cookie consent cannot be disabled while Google Analytics is enabled.
+              </p>
+            <% end %>
+            <div class="ml-7 mt-3 space-y-3 pl-3 border-l-2 border-gray-200">
+              <%= label_tag :cookie_consent_message, "Banner Message", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= text_area_tag :cookie_consent_message, @cookie_consent_message,
+                  rows: 3,
+                  placeholder: "We use cookies to improve your experience and analyze site traffic. You can choose which cookies to allow.",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none resize-none" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics -->
+    <div id="analytics" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 scroll-mt-6" data-controller="toggle-fields">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Analytics</h2>
+
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <%= check_box_tag 'google_analytics_enabled', '1', @google_analytics_enabled,
+              class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2",
+              data: { action: "change->toggle-fields#toggle" } %>
+        </div>
+        <div class="ml-3 flex-1">
+          <label for="google_analytics_enabled" class="font-medium text-gray-900">
+            Enable Google Analytics 4
+          </label>
+          <p class="text-sm text-gray-600 mt-1">
+            Track page views and events with Google Analytics 4. Enabling GA4 will automatically enable the Cookie Consent banner and it cannot be disabled while GA is active.
+          </p>
+          <div data-toggle-fields-target="fields" class="<%= 'hidden' unless @google_analytics_enabled %> mt-4 pt-4 border-t border-gray-200 space-y-3">
+            <%= label_tag :google_analytics_id, "Measurement ID", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= text_field_tag :google_analytics_id, @google_analytics_id,
+                placeholder: "G-XXXXXXXXXX",
+                pattern: "G-[A-Z0-9]+",
+                title: "Must start with G- followed by alphanumeric characters",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none font-mono" %>
+            <p class="text-xs text-gray-500">
+              Find this in your GA4 property under Admin → Data Streams → your stream. Must start with <code class="bg-gray-100 px-1 rounded">G-</code>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="flex items-center justify-between pt-4">
+      <div class="text-sm text-gray-600">
+        Changes take effect immediately after saving
+      </div>
+      <div class="flex items-center gap-3">
+        <%= link_to "Cancel", lean_cms_root_path, class: "px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors" %>
+        <%= f.submit "Save Settings", class: "px-6 py-2 bg-[#b82025] hover:bg-[#a01c20] text-white font-semibold rounded-lg transition-colors cursor-pointer" %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,102 @@
+<aside class="w-64 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto">
+  <!-- Logo / Brand -->
+  <div class="h-16 flex items-center px-6 border-b border-gray-200">
+    <div class="flex items-center space-x-3">
+      <% if LeanCms.site_logo_path.present? %>
+        <%= image_tag LeanCms.site_logo_path, alt: LeanCms.site_name, class: "h-10 w-auto" %>
+      <% else %>
+        <div class="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold text-lg" style="background-color: var(--cms-primary);">
+          <%= LeanCms.site_name[0..1].upcase %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="mt-6 px-3">
+    <!-- Dashboard -->
+    <%= link_to lean_cms_root_path, class: "flex items-center px-3 py-2 text-sm font-medium rounded-lg mb-1 transition-colors #{current_page?(lean_cms_root_path) ? 'text-white' : 'text-gray-700 hover:bg-gray-100'}", style: current_page?(lean_cms_root_path) ? "background-color: var(--cms-primary);" : "" do %>
+      <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+      Dashboard
+    <% end %>
+
+    <% if current_user&.can_edit_blog? || current_user&.can_edit_pages? %>
+      <!-- Content Section -->
+      <div class="mt-6 mb-2 px-3">
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Content</h3>
+      </div>
+
+      <% if current_user&.can_edit_blog? %>
+        <!-- Blog Posts -->
+        <%= link_to lean_cms_posts_path, class: "flex items-center px-3 py-2 text-sm font-medium rounded-lg mb-1 transition-colors #{controller_name == 'posts' ? 'text-white' : 'text-gray-700 hover:bg-gray-100'}", style: controller_name == 'posts' ? "background-color: var(--cms-primary);" : "" do %>
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+          </svg>
+          Blog & Portfolio
+          <% if (count = LeanCms::Post.draft.count) > 0 %>
+            <span class="ml-auto bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full"><%= count %></span>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <% if current_user&.can_edit_pages? %>
+        <!-- Page Content -->
+        <%= link_to lean_cms_page_contents_path, class: "flex items-center px-3 py-2 text-sm font-medium rounded-lg mb-1 transition-colors #{controller_name == 'page_contents' ? 'text-white' : 'text-gray-700 hover:bg-gray-100'}", style: controller_name == 'page_contents' ? "background-color: var(--cms-primary);" : "" do %>
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          Page Content
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <!-- Form Submissions -->
+    <%= link_to lean_cms_form_submissions_path, class: "flex items-center px-3 py-2 text-sm font-medium rounded-lg mb-1 transition-colors #{controller_name == 'form_submissions' ? 'text-white' : 'text-gray-700 hover:bg-gray-100'}", style: controller_name == 'form_submissions' ? "background-color: var(--cms-primary);" : "" do %>
+      <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+      Form Submissions
+      <% if (count = LeanCms::FormSubmission.unread.count) > 0 %>
+        <span class="ml-auto bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full"><%= count %></span>
+      <% end %>
+    <% end %>
+
+    <% if current_user&.can_manage_users? %>
+      <!-- Administration Section -->
+      <div class="mt-6 mb-2 px-3">
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Administration</h3>
+      </div>
+
+      <!-- User Management -->
+      <%= link_to lean_cms_users_path, class: "flex items-center px-3 py-2 text-sm font-medium rounded-lg mb-1 transition-colors #{controller_name == 'users' ? 'text-white' : 'text-gray-700 hover:bg-gray-100'}", style: controller_name == 'users' ? "background-color: var(--cms-primary);" : "" do %>
+        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+        Users
+      <% end %>
+
+      <!-- Notification Settings -->
+      <% if current_user&.can_access_settings? %>
+        <%= link_to edit_lean_cms_notification_settings_path, class: "flex items-center px-3 py-2 text-sm font-medium rounded-lg mb-1 transition-colors #{controller_name == 'notification_settings' ? 'text-white' : 'text-gray-700 hover:bg-gray-100'}", style: controller_name == 'notification_settings' ? "background-color: var(--cms-primary);" : "" do %>
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          Notification Settings
+        <% end %>
+      <% end %>
+
+      <!-- Activity Log (super admins only) -->
+      <% if current_user&.is_super_admin? %>
+        <%= link_to lean_cms_activity_path, class: "flex items-center px-3 py-2 text-sm font-medium rounded-lg mb-1 transition-colors #{controller_name == 'activity' ? 'text-white' : 'text-gray-700 hover:bg-gray-100'}", style: controller_name == 'activity' ? "background-color: var(--cms-primary);" : "" do %>
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+          Activity Log
+        <% end %>
+      <% end %>
+    <% end %>
+
+  </nav>
+</aside>

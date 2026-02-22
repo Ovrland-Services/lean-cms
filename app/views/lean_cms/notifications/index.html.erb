@@ -1,0 +1,72 @@
+<% content_for :page_title, "Notifications" %>
+
+<div class="max-w-4xl">
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Notifications</h1>
+      <p class="text-gray-600 mt-2">
+        <% if @unread_count > 0 %>
+          <%= pluralize(@unread_count, 'unread notification') %>
+        <% else %>
+          All caught up!
+        <% end %>
+      </p>
+    </div>
+    <% if @unread_count > 0 %>
+      <%= button_to mark_all_as_read_lean_cms_notifications_path, 
+          method: :patch,
+          class: "px-4 py-2 text-sm font-medium text-[#b82025] border border-[#b82025] rounded-lg hover:bg-[#b82025] hover:text-white transition-colors" do %>
+        Mark All as Read
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <% if @notifications.any? %>
+      <div class="divide-y divide-gray-200">
+        <% @notifications.each do |notification| %>
+          <%= link_to lean_cms_notification_path(notification), 
+              class: "block px-6 py-4 hover:bg-gray-50 transition-colors #{'bg-blue-50' unless notification.read?}" do %>
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <% unless notification.read? %>
+                  <div class="h-2 w-2 rounded-full bg-[#b82025] mt-2"></div>
+                <% end %>
+              </div>
+              <div class="ml-3 flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-gray-900">
+                    <%= notification.params[:title] || 'Contact Form Submission' %>
+                  </p>
+                  <span class="text-xs text-gray-400">
+                    <%= time_ago_in_words(notification.created_at) %> ago
+                  </span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">
+                  <%= notification.params[:message] || notification.message %>
+                </p>
+                <% if notification.params[:url] %>
+                  <p class="text-xs text-[#b82025] mt-2">
+                    View details →
+                  </p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div class="px-6 py-4 border-t border-gray-200">
+        <%= paginate @notifications %>
+      </div>
+    <% else %>
+      <div class="px-6 py-12 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        <p class="mt-2 text-sm text-gray-600">No notifications yet</p>
+        <p class="mt-1 text-xs text-gray-500">You'll see notifications here when contact form submissions are received</p>
+      </div>
+    <% end %>
+  </div>
+</div>

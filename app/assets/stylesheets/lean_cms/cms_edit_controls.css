@@ -1,0 +1,531 @@
+/* CMS Edit Controls - In-context editing for logged-in CMS users */
+
+.cms-editable-section {
+  position: relative !important;
+  border: 2px dashed transparent !important;
+  transition: border-color 0.2s ease;
+  isolation: isolate;
+}
+
+.cms-editable-section:hover {
+  border-color: rgba(37, 99, 235, 0.6) !important;
+}
+
+/* Disable section borders when inline editing is turned off */
+.cms-editable-section.cms-inline-editing-disabled:hover {
+  border-color: transparent !important;
+}
+
+.cms-editable-section.cms-inline-editing-disabled .cms-edit-overlay {
+  display: none !important;
+}
+
+.cms-edit-overlay {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 9999 !important;
+}
+
+/* Only the very first editable section on the page needs extra space for the header */
+main > .cms-editable-section:first-of-type .cms-edit-overlay {
+  top: 120px !important;
+}
+
+.cms-editable-section:hover .cms-edit-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cms-edit-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  background: rgba(37, 99, 235, 0.95) !important;
+  color: white !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(8px) !important;
+  white-space: nowrap !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.cms-section-title {
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  padding-right: 8px !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.cms-edit-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 12px !important;
+  background: white !important;
+  color: rgb(37, 99, 235) !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+  line-height: 1 !important;
+}
+
+.cms-edit-button:hover {
+  background: rgb(243, 244, 246) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  color: rgb(37, 99, 235) !important;
+  text-decoration: none !important;
+}
+
+.cms-edit-button::after {
+  content: '→' !important;
+  font-size: 14px !important;
+  margin-left: 2px !important;
+}
+
+/* Sticky overlay state - needs to clear the fixed header + admin bar (~128px total) */
+.cms-edit-overlay.cms-overlay-stuck {
+  position: fixed !important;
+  top: 140px !important;
+  right: auto !important; /* Clear right so left positioning works correctly */
+  z-index: 9999 !important;
+}
+
+/* Make sure edit controls work on dark backgrounds */
+.cms-editable-section.dark-section:hover {
+  outline-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Ensure proper stacking for sections with their own positioning */
+.cms-editable-section > section,
+.cms-editable-section > div {
+  position: relative;
+}
+
+/* Inline editing field wrapper */
+.cms-inline-field {
+  position: relative;
+  display: inline-block;
+  min-width: 2em;
+  transition: all 0.2s ease;
+}
+
+.cms-inline-field:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  outline: 2px dashed rgba(59, 130, 246, 0.3);
+  outline-offset: 2px;
+}
+
+/* Disable inline field hover effects when editing is off */
+body.cms-inline-editing-disabled .cms-inline-field:hover {
+  background-color: transparent;
+  outline: none;
+}
+
+/* Edit icon container */
+.cms-inline-edit-icons {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: none;
+  gap: 4px;
+  z-index: 10;
+}
+
+.cms-inline-field:hover .cms-inline-edit-icons {
+  display: flex;
+}
+
+/* Hide inline edit icons when editing is disabled */
+body.cms-inline-editing-disabled .cms-inline-field:hover .cms-inline-edit-icons {
+  display: none !important;
+}
+
+/* Individual edit icons */
+.cms-inline-edit-icon {
+  width: 24px;
+  height: 24px;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.cms-edit-icon-edit {
+  background: rgb(59, 130, 246);
+}
+
+.cms-edit-icon-edit:hover {
+  background: rgb(37, 99, 235);
+  transform: scale(1.1);
+}
+
+.cms-edit-icon-undo {
+  background: rgb(251, 146, 60);
+}
+
+.cms-edit-icon-undo:hover {
+  background: rgb(249, 115, 22);
+  transform: scale(1.1);
+}
+
+/* Inline input */
+.cms-inline-input {
+  width: 100%;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 2px solid rgb(59, 130, 246);
+  border-radius: 4px;
+  font: inherit;
+  font-size: inherit;
+  color: #1f2937 !important;
+  background: white;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Inline textarea (for multi-line content) */
+.cms-inline-textarea {
+  resize: vertical;
+  line-height: inherit;
+  font-family: inherit;
+  text-align: inherit;
+  color: #1f2937 !important;
+}
+
+/* Feedback message */
+.cms-inline-feedback {
+  position: absolute;
+  bottom: -24px;
+  right: 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+.cms-inline-feedback-success {
+  background: rgb(34, 197, 94);
+  color: white;
+}
+
+.cms-inline-feedback-error {
+  background: rgb(239, 68, 68);
+  color: white;
+}
+
+/* Inline editing buttons */
+.cms-inline-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cms-inline-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.cms-inline-button svg {
+  flex-shrink: 0;
+}
+
+.cms-inline-button-save {
+  background: rgb(34, 197, 94);
+  color: white;
+}
+
+.cms-inline-button-save:hover {
+  background: rgb(22, 163, 74);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cms-inline-button-cancel {
+  background: rgb(107, 114, 128);
+  color: white;
+}
+
+.cms-inline-button-cancel:hover {
+  background: rgb(75, 85, 99);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal styles */
+.cms-modal {
+  backdrop-filter: blur(4px);
+}
+
+.cms-modal.hidden {
+  display: none !important;
+}
+
+/* Inline text edit dialog (replaces in-place input approach) */
+.cms-text-edit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.cms-text-edit-dialog {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.1);
+  width: 480px;
+  max-width: calc(100vw - 32px);
+  overflow: hidden;
+  animation: cms-dialog-in 0.15s ease;
+}
+
+@keyframes cms-dialog-in {
+  from { opacity: 0; transform: scale(0.95) translateY(-8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.cms-text-edit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.cms-text-edit-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.cms-text-edit-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cms-text-edit-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cms-text-edit-input {
+  display: block;
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 15px;
+  font-family: inherit;
+  color: #111827;
+  background: #f9fafb;
+  outline: none;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: background 0.15s;
+}
+
+.cms-text-edit-input:focus {
+  background: #fff;
+  border-bottom-color: #3b82f6;
+}
+
+.cms-text-edit-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px;
+}
+
+.cms-text-edit-btn {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cms-text-edit-btn-cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cms-text-edit-btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+.cms-text-edit-btn-save {
+  background: #2563eb;
+  color: #fff;
+}
+
+.cms-text-edit-btn-save:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+}
+
+.cms-text-edit-btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.cms-text-edit-btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.cms-text-edit-btn-danger:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+}
+
+/* Confirm dialog — slightly wider to accommodate diff */
+.cms-confirm-dialog {
+  width: 480px;
+  max-width: 92vw;
+}
+
+.cms-confirm-message {
+  padding: 18px 18px 8px;
+  font-size: 14px;
+  color: #4b5563;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Undo diff block */
+.cms-diff-block {
+  margin: 14px 18px 6px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.cms-diff-row {
+  display: flex;
+  gap: 0;
+  align-items: baseline;
+}
+
+.cms-diff-row-current {
+  background: #fef2f2;
+  border-bottom: 1px solid #fecaca;
+}
+
+.cms-diff-row-previous {
+  background: #f0fdf4;
+}
+
+.cms-diff-label {
+  flex: 0 0 96px;
+  padding: 9px 10px 9px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.cms-diff-row-current .cms-diff-label  { color: #b91c1c; }
+.cms-diff-row-previous .cms-diff-label { color: #15803d; }
+
+.cms-diff-value {
+  flex: 1;
+  padding: 9px 12px 9px 0;
+  color: #111827;
+  word-break: break-word;
+}
+
+/* Highlighted changed words */
+.cms-diff-value del {
+  text-decoration: none;
+  background: #fca5a5;
+  border-radius: 3px;
+  padding: 1px 2px;
+}
+
+.cms-diff-value ins {
+  text-decoration: none;
+  background: #86efac;
+  border-radius: 3px;
+  padding: 1px 2px;
+}
+
+/* Cards editor — color swatch button */
+.cards-color-swatch {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  padding: 2px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+  overflow: hidden;
+}
+
+.cards-color-swatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 6px;
+}
+
+.cards-color-swatch::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+
+.cards-color-swatch:hover {
+  border-color: #6b7280;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}

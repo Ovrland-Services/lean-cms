@@ -1,0 +1,79 @@
+<% content_for :page_title, "Activity Log" %>
+
+<div class="max-w-6xl">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Activity Log</h1>
+    <p class="text-gray-600 mt-2">Track who changed what across the CMS</p>
+  </div>
+
+  <% if params[:item_type].present? || params[:whodunnit].present? %>
+    <div class="mb-4 flex items-center gap-2">
+      <%= link_to lean_cms_activity_path, class: "text-sm text-[#b82025] hover:underline" do %>
+        Clear filters
+      <% end %>
+      <% if params[:item_type].present? %>
+        <span class="text-sm text-gray-500">Filtering by: <%= params[:item_type] %></span>
+      <% end %>
+      <% if params[:whodunnit].present? %>
+        <span class="text-sm text-gray-500">User: <%= User.unscoped.find_by(id: params[:whodunnit])&.email_address || "##{params[:whodunnit]}" %></span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <% if @versions.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">When</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Who</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">What</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Old value</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">New value</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @versions.each do |version| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= version.created_at ? format_datetime(version.created_at) : "—" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= activity_who(version) %>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-900">
+                  <%= activity_item_label(version) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= activity_action_badge_class(version.event) %>">
+                    <%= version.event %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate" title="<%= activity_old_value(version) %>">
+                  <%= activity_old_value(version) %>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate" title="<%= activity_new_value(version) %>">
+                  <%= activity_new_value(version) %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="px-6 py-4 border-t border-gray-200">
+        <%= paginate @versions %>
+      </div>
+    <% else %>
+      <div class="px-6 py-12 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+        </svg>
+        <p class="mt-2 text-sm text-gray-600">No activity yet</p>
+        <p class="mt-1 text-xs text-gray-500">Changes to page content, settings, posts, and users will appear here</p>
+      </div>
+    <% end %>
+  </div>
+</div>

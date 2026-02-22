@@ -1,0 +1,428 @@
+<% content_for :title, "Edit #{@section.humanize}" %>
+
+<!-- Breadcrumb -->
+<nav class="mb-6">
+  <ol class="flex items-center space-x-2 text-sm text-gray-600">
+    <li>
+      <%= link_to "Page Content", lean_cms_page_contents_path, class: "hover:text-gray-900" %>
+    </li>
+    <li>
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+      </svg>
+    </li>
+    <li class="font-medium text-gray-900 capitalize"><%= @page.titleize %></li>
+    <li>
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+      </svg>
+    </li>
+    <li class="font-medium text-gray-900 capitalize"><%= @section.humanize %></li>
+  </ol>
+</nav>
+
+<!-- Header -->
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-gray-900 mb-2">Edit <%= @section.humanize %></h1>
+  <p class="text-gray-600">
+    Update content for the <span class="font-medium"><%= @page.titleize %></span> page
+  </p>
+</div>
+
+<!-- Settings Override Notice for contact/info and contact/hours -->
+<% if @page == 'contact' && ['info', 'hours'].include?(@section) %>
+  <% settings_key = @section == 'info' ? 'contact_info_override' : 'contact_hours_override' %>
+  <% override_enabled = LeanCms::Setting.get(settings_key, 'false') == 'true' %>
+
+  <div data-controller="settings-override"
+       data-settings-override-section-value="<%= @section %>">
+  <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+    <div class="flex items-start gap-3">
+      <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div class="flex-1">
+        <h3 class="font-medium text-amber-800">Site-Wide Settings</h3>
+        <p class="text-sm text-amber-700 mt-1">
+          This information is managed in
+          <%= link_to "Site Settings", lean_cms_settings_path(anchor: @section == 'info' ? 'site-info' : 'business-hours'),
+              class: "underline font-medium", target: "_blank" %>
+          and used across the site (contact page, footer, schema markup).
+        </p>
+
+        <div class="mt-3 flex items-center">
+          <%= form_with url: lean_cms_page_content_path(page: @page, section: @section), method: :patch, data: { turbo: false } do %>
+            <label class="flex items-center cursor-pointer">
+              <%= check_box_tag settings_key, '1', override_enabled,
+                  class: "w-4 h-4 text-amber-600 bg-gray-100 border-gray-300 rounded focus:ring-amber-500 focus:ring-2",
+                  data: { action: "change->settings-override#toggle", settings_override_target: "checkbox" } %>
+              <span class="ml-2 text-sm font-medium text-amber-800">Override with page-specific values</span>
+            </label>
+          <% end %>
+        </div>
+
+        <% unless override_enabled %>
+          <div class="mt-4 pt-3 border-t border-amber-200">
+            <p class="text-xs font-medium text-amber-700 mb-2">Current values from Settings:</p>
+            <% if @section == 'info' %>
+              <div class="text-sm text-amber-800 space-y-1">
+                <p><span class="font-medium">Address:</span> <%= LeanCms::Setting.site_address_single_line.presence || 'Not set' %></p>
+                <p><span class="font-medium">Phone:</span> <%= LeanCms::Setting.site_phone.presence || 'Not set' %></p>
+                <p><span class="font-medium">Email:</span> <%= LeanCms::Setting.site_email.presence || 'Not set' %></p>
+              </div>
+            <% else %>
+              <div class="text-sm text-amber-800 space-y-1">
+                <% LeanCms::Setting.business_hours['hours'].each do |hour| %>
+                  <p><span class="font-medium"><%= hour['label'] %>:</span> <%= hour['value'] %></p>
+                <% end %>
+                <% if LeanCms::Setting.business_hours['note'].present? %>
+                  <p class="mt-2 text-xs italic"><%= LeanCms::Setting.business_hours['note'] %></p>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+<!-- Edit Form -->
+<div class="bg-white rounded-lg border border-gray-200 overflow-hidden <%= 'hidden' if @page == 'contact' && ['info', 'hours'].include?(@section) && LeanCms::Setting.get(@section == 'info' ? 'contact_info_override' : 'contact_hours_override', 'false') != 'true' %>"
+     data-settings-override-target="form">
+<% else %>
+
+<!-- Edit Form (non-override section) -->
+<div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+<% end %>
+  <%= form_with url: lean_cms_page_content_path(page: @page, section: @section), method: :patch, multipart: true, class: "p-6 space-y-6" do |f| %>
+
+    <% @fields.each do |field| %>
+      <div class="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+        <label class="block text-sm font-semibold text-gray-900 mb-2">
+          <%= field.label || field.key.humanize %>
+        </label>
+
+        <% case field.content_type.to_sym %>
+        <% when :text %>
+          <% if field.key == 'hours_json' %>
+            <!-- Business Hours Dynamic Editor -->
+            <%
+              # Try to get saved override data first
+              hours_data = field.display_value.is_a?(String) ? (JSON.parse(field.display_value) rescue nil) : field.display_value
+
+              # If no override data or empty, fall back to Settings data
+              if hours_data.nil? || (hours_data['hours'].blank? && hours_data['note'].blank?)
+                hours_data = LeanCms::Setting.business_hours
+              end
+
+              hours = hours_data['hours'] || []
+              hours = [{ 'label' => '', 'value' => '' }] if hours.empty?
+            %>
+            <div data-controller="dynamic-list" data-dynamic-list-max-value="10">
+              <div data-dynamic-list-target="list" class="space-y-3">
+                <% hours.each do |hour| %>
+                  <div data-list-item class="flex gap-3 items-center">
+                    <%= text_field_tag "hours_labels[]", hour['label'],
+                        placeholder: "e.g., Monday - Friday",
+                        class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" %>
+                    <%= text_field_tag "hours_values[]", hour['value'],
+                        placeholder: "e.g., 8:00 AM - 5:00 PM",
+                        class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" %>
+                    <button type="button" data-action="dynamic-list#remove"
+                            class="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                    </button>
+                  </div>
+                <% end %>
+              </div>
+
+              <button type="button" data-action="dynamic-list#add"
+                      class="mt-3 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add Hours Row
+              </button>
+
+              <template data-dynamic-list-target="template">
+                <div data-list-item class="flex gap-3 items-center">
+                  <%= text_field_tag "hours_labels[]", "",
+                      placeholder: "e.g., Monday - Friday",
+                      class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" %>
+                  <%= text_field_tag "hours_values[]", "",
+                      placeholder: "e.g., 8:00 AM - 5:00 PM",
+                      class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" %>
+                  <button type="button" data-action="dynamic-list#remove"
+                          class="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                </div>
+              </template>
+
+              <div class="mt-4 pt-4 border-t border-gray-200">
+                <%= label_tag :hours_note, "Additional Note", class: "block text-sm font-medium text-gray-700 mb-1" %>
+                <%= text_area_tag :hours_note, hours_data['note'],
+                    rows: 2,
+                    placeholder: "e.g., Emergency services available 24/7 for existing clients.",
+                    class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none" %>
+              </div>
+            </div>
+          <% else %>
+            <% if field.max_length.present? && field.max_length > 0 %>
+              <div data-controller="character-counter" data-character-counter-max-value="<%= field.max_length %>">
+                <%= text_field_tag "page_contents[#{field.id}][value]", field.display_value,
+                    class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                    maxlength: field.max_length,
+                    data: { character_counter_target: "input", action: "input->character-counter#updateCounter" } %>
+                <div class="flex justify-end mt-1">
+                  <span data-character-counter-target="counter" class="text-xs text-gray-500"></span>
+                </div>
+              </div>
+            <% else %>
+              <%= text_field_tag "page_contents[#{field.id}][value]", field.display_value,
+                  class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+            <% end %>
+          <% end %>
+
+        <% when :rich_text %>
+          <%= rich_text_area_tag "page_contents[#{field.id}][value]", field.display_value,
+              class: "w-full min-h-[200px] border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+
+        <% when :image %>
+          <div class="space-y-3">
+            <% if field.image_file.attached? %>
+              <div class="relative inline-block">
+                <%= image_tag field.image_file, class: "max-w-xs rounded-lg border border-gray-200" %>
+                <div class="mt-2 text-sm text-gray-600">
+                  Current image: <%= field.image_file.filename %>
+                </div>
+              </div>
+            <% elsif field.value.present? %>
+              <div class="text-sm text-gray-600">
+                Current URL: <%= field.value %>
+              </div>
+            <% end %>
+
+            <%= file_field_tag "page_contents[#{field.id}][image_file]",
+                accept: "image/*",
+                class: "block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" %>
+            <p class="text-xs text-gray-500">Upload a new image to replace the current one</p>
+          </div>
+
+        <% when :boolean %>
+          <div class="flex items-center">
+            <%= check_box_tag "page_contents[#{field.id}][value]", "1", field.display_value,
+                class: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" %>
+            <span class="ml-2 text-sm text-gray-600">Enable this feature</span>
+          </div>
+
+        <% when :url %>
+          <%= url_field_tag "page_contents[#{field.id}][value]", field.display_value,
+              class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+              placeholder: "https://example.com" %>
+
+        <% when :color %>
+          <div class="flex items-center space-x-3">
+            <%= color_field_tag "page_contents[#{field.id}][value]", field.display_value || "#000000",
+                class: "w-20 h-10 border border-gray-300 rounded cursor-pointer" %>
+            <%= text_field_tag "page_contents[#{field.id}][value]", field.display_value || "#000000",
+                class: "flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                placeholder: "#000000" %>
+          </div>
+
+        <% when :dropdown %>
+          <% options = field.options.is_a?(Hash) ? field.options : {} %>
+          <%= select_tag "page_contents[#{field.id}][value]",
+              options_for_select(options, field.display_value),
+              class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+
+        <% when :bullets %>
+          <%
+            bullets = field.display_value.is_a?(Array) ? field.display_value : []
+            bullets = [''] if bullets.empty?
+          %>
+          <div data-controller="dynamic-list" data-dynamic-list-max-value="20" data-dynamic-list-min-value="1">
+            <div data-dynamic-list-target="list" class="space-y-2">
+              <% bullets.each do |bullet| %>
+                <div data-list-item class="flex gap-3 items-center">
+                  <%= text_field_tag "bullet_items[]", bullet,
+                      placeholder: "Enter a bullet point",
+                      class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" %>
+                  <button type="button" data-action="click->dynamic-list#remove"
+                          class="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer flex-shrink-0">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                </div>
+              <% end %>
+            </div>
+
+            <button type="button" data-action="click->dynamic-list#add"
+                    class="mt-3 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+              <svg class="w-4 h-4 mr-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Add Bullet Point
+            </button>
+
+            <template data-dynamic-list-target="template">
+              <div data-list-item class="flex gap-3 items-center">
+                <%= text_field_tag "bullet_items[]", "",
+                    placeholder: "Enter a bullet point",
+                    class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" %>
+                <button type="button" data-action="click->dynamic-list#remove"
+                        class="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer flex-shrink-0">
+                  <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            </template>
+          </div>
+
+          <!-- Hidden field to store the bullets field ID for controller processing -->
+          <input type="hidden" name="bullets_field_id" value="<%= field.id %>">
+
+        <% when :cards %>
+          <% cards = field.display_value.is_a?(Array) ? field.display_value : [] %>
+          <script>
+            window._cardEditorInitial_<%= field.id %> = <%= raw json_escape(cards.to_json) %>;
+          </script>
+          <div x-data="cardEditor(window['_cardEditorInitial_<%= field.id %>'])" class="space-y-4">
+            <!-- Cards List -->
+            <div class="space-y-3">
+              <template x-for="(card, index) in cards" :key="index">
+                <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div class="flex items-center justify-between mb-3">
+                    <h4 class="font-semibold text-gray-900" x-text="`Card ${index + 1}`"></h4>
+                    <button type="button" @click="removeCard(index)"
+                            class="text-red-600 hover:text-red-800 text-sm font-medium cursor-pointer">
+                      Remove
+                    </button>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-4">
+                    <!-- Icon -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Icon</label>
+                      <select x-model="card.icon"
+                              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="checkmark-badge">Checkmark Badge</option>
+                        <option value="checkmark-circle">Checkmark Circle</option>
+                        <option value="lock">Lock</option>
+                        <option value="lightning-bolt">Lightning Bolt</option>
+                        <option value="users">Users</option>
+                        <option value="sliders">Sliders</option>
+                        <option value="globe">Globe</option>
+                        <option value="support">Support</option>
+                        <option value="control-panel">Control Panel</option>
+                        <option value="gear">Gear</option>
+                      </select>
+                    </div>
+
+                    <!-- Icon Color -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Icon Color</label>
+                      <input type="text" x-model="card.icon_color"
+                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                             placeholder="#000000 or white">
+                    </div>
+
+                    <!-- Background Color -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Background Color</label>
+                      <input type="text" x-model="card.bg_color"
+                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                             placeholder="#ffffff or gradient-red">
+                    </div>
+
+                    <!-- Alignment -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Alignment</label>
+                      <select x-model="card.alignment"
+                              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="left">Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
+                      </select>
+                    </div>
+
+                    <!-- Heading -->
+                    <div class="col-span-2">
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Heading</label>
+                      <input type="text" x-model="card.heading"
+                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                             placeholder="Card heading">
+                    </div>
+
+                    <!-- Text -->
+                    <div class="col-span-2">
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Text</label>
+                      <textarea x-model="card.text" rows="2"
+                                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                placeholder="Card description"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+
+            <!-- Add Card Button -->
+            <button type="button" @click="addCard"
+                    class="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors cursor-pointer">
+              + Add Card
+            </button>
+
+            <!-- Hidden input to store JSON -->
+            <input type="hidden"
+                   :name="'page_contents[<%= field.id %>][value]'"
+                   :value="JSON.stringify(cards)">
+          </div>
+
+          <script>
+            function cardEditor(initialCards) {
+              return {
+                cards: initialCards.length > 0 ? initialCards : [],
+                addCard() {
+                  this.cards.push({
+                    icon: 'checkmark-circle',
+                    icon_color: '#2563eb',
+                    bg_color: '#dbeafe',
+                    heading: '',
+                    text: '',
+                    alignment: 'left'
+                  });
+                },
+                removeCard(index) {
+                  this.cards.splice(index, 1);
+                }
+              }
+            }
+          </script>
+
+        <% end %>
+
+        <% if field.key.present? && !%w[hours_json bullets].include?(field.key) %>
+          <p class="mt-1 text-xs text-gray-500">Field key: <code class="bg-gray-100 px-1 py-0.5 rounded"><%= field.key %></code></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Form Actions -->
+    <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+      <%= link_to "Cancel", lean_cms_page_contents_path,
+          class: "px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" %>
+
+      <%= f.submit "Save Changes",
+          class: "px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors" %>
+    </div>
+  <% end %>
+</div>
+<% if @page == 'contact' && ['info', 'hours'].include?(@section) %>
+</div><!-- Close controller wrapper -->
+<% end %>

@@ -1,0 +1,113 @@
+<% content_for :title, "Page Content" %>
+
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-gray-900 mb-2">Page Content</h1>
+  <p class="text-gray-600">Manage editable content across all pages</p>
+</div>
+
+<% if @pages.empty? %>
+  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+    <div class="flex items-start">
+      <svg class="w-6 h-6 text-yellow-600 mt-1 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <div>
+        <h3 class="text-lg font-semibold text-yellow-800 mb-1">No Page Content Found</h3>
+        <p class="text-yellow-700">Run <code class="bg-yellow-100 px-2 py-1 rounded">rake lean_cms:load_structure</code> to load page content from your YAML structure file.</p>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <div class="space-y-3" x-data="{ openPage: '<%= @pages.first[:key] %>' }">
+    <% @pages.each do |page_data| %>
+      <% page = page_data[:key] %>
+      <% page_title = page_data[:display_title] %>
+      <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <!-- Page Header (Collapsible) -->
+        <button
+          @click="openPage = openPage === '<%= page %>' ? '' : '<%= page %>'"
+          class="w-full bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-200 hover:from-gray-100 hover:to-gray-50 transition-colors cursor-pointer">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <!-- Chevron Icon -->
+              <svg class="w-5 h-5 text-gray-400 transition-transform"
+                   :class="openPage === '<%= page %>' ? 'rotate-90' : ''"
+                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+
+              <div class="text-left">
+                <h2 class="text-xl font-bold text-gray-900"><%= page_title %></h2>
+                <p class="text-sm text-gray-600 mt-1">
+                  <%= @page_structure[page].length %> sections •
+                  <%= @page_structure[page].sum { |s| s[:field_count] } %> fields
+                </p>
+              </div>
+            </div>
+
+            <%= link_to "/#{page}", target: "_blank",
+                class: "text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1 cursor-pointer",
+                onclick: "event.stopPropagation();" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+              View Page
+            <% end %>
+          </div>
+        </button>
+
+        <!-- Sections List (Collapsible Content) -->
+        <div x-show="openPage === '<%= page %>'"
+             x-collapse
+             class="divide-y divide-gray-100">
+          <% @page_structure[page].each do |section_data| %>
+            <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <h3 class="text-base font-semibold text-gray-900">
+                      <%= section_data[:display_title] %>
+                    </h3>
+                    <% if section_data[:has_cards] %>
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                        </svg>
+                        Cards
+                      </span>
+                    <% end %>
+                    <% if section_data[:has_bullets] %>
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                        </svg>
+                        Bullets
+                      </span>
+                    <% end %>
+                  </div>
+                  <div class="flex items-center gap-4 mt-1">
+                    <p class="text-sm text-gray-600">
+                      <%= section_data[:field_count] %> <%= 'field'.pluralize(section_data[:field_count]) %>
+                    </p>
+                    <% if section_data[:last_updated] %>
+                      <p class="text-sm text-gray-500">
+                        Updated <%= time_ago_in_words(section_data[:last_updated]) %> ago
+                      </p>
+                    <% end %>
+                  </div>
+                </div>
+                <%= link_to lean_cms_edit_page_content_path(page: page, section: section_data[:section]),
+                    class: "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors hover:bg-gray-100 cursor-pointer" do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                  Edit
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

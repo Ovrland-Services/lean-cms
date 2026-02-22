@@ -1,0 +1,105 @@
+<%= form_with model: [:lean_cms, @user], class: "space-y-6" do |f| %>
+  <% if @user.errors.any? %>
+    <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+      <h3 class="font-medium">Please correct the following errors:</h3>
+      <ul class="mt-2 list-disc list-inside">
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Basic Information -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">User Information</h2>
+
+    <div class="space-y-4">
+      <div>
+        <%= f.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :name, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none", placeholder: "Full name" %>
+      </div>
+
+      <div>
+        <%= f.label :email_address, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.email_field :email_address, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none", placeholder: "email@example.com" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Permissions -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Permissions</h2>
+    <p class="text-sm text-gray-600 mb-4">Select what this user can do in the CMS.</p>
+
+    <div class="space-y-4">
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <%= f.check_box :can_edit_pages, class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2" %>
+        </div>
+        <div class="ml-3">
+          <%= f.label :can_edit_pages, class: "font-medium text-gray-900" do %>
+            Can Edit Pages
+          <% end %>
+          <p class="text-sm text-gray-600">Edit page content and sections</p>
+        </div>
+      </div>
+
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <%= f.check_box :can_edit_blog, class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2" %>
+        </div>
+        <div class="ml-3">
+          <%= f.label :can_edit_blog, class: "font-medium text-gray-900" do %>
+            Can Edit Blog
+          <% end %>
+          <p class="text-sm text-gray-600">Create and edit blog posts and portfolio items</p>
+        </div>
+      </div>
+
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <%= f.check_box :can_manage_users, class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2" %>
+        </div>
+        <div class="ml-3">
+          <%= f.label :can_manage_users, class: "font-medium text-gray-900" do %>
+            Can Manage Users
+          <% end %>
+          <p class="text-sm text-gray-600">Add, edit, and deactivate other users (except super admins)</p>
+        </div>
+      </div>
+
+      <% if current_user.is_super_admin? %>
+        <div class="flex items-start border-t border-gray-200 pt-4">
+          <div class="flex items-center h-5">
+            <%= f.check_box :can_access_settings, class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2" %>
+          </div>
+          <div class="ml-3">
+            <%= f.label :can_access_settings, class: "font-medium text-gray-900" do %>
+              Can Access Settings
+            <% end %>
+            <p class="text-sm text-gray-600">Access and modify system settings</p>
+          </div>
+        </div>
+
+        <div class="flex items-start pt-2">
+          <div class="flex items-center h-5">
+            <%= f.check_box :is_super_admin, class: "w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2" %>
+          </div>
+          <div class="ml-3">
+            <%= f.label :is_super_admin, class: "font-medium text-purple-900" do %>
+              Super Admin
+            <% end %>
+            <p class="text-sm text-purple-600">Has all permissions and cannot be modified by regular admins. Use sparingly.</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="flex items-center justify-between pt-4">
+    <%= link_to "Cancel", lean_cms_users_path, class: "px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors" %>
+    <%= f.submit @user.new_record? ? "Send Invitation" : "Update User", class: "px-6 py-2 bg-[#b82025] hover:bg-[#a01c20] text-white font-semibold rounded-lg transition-colors cursor-pointer" %>
+  </div>
+<% end %>

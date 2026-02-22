@@ -1,0 +1,39 @@
+<% content_for :page_title, "Notification Details" %>
+
+<div class="max-w-4xl">
+  <div class="mb-6">
+    <%= link_to lean_cms_notifications_path, class: "inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back to Notifications
+    <% end %>
+    <h1 class="text-3xl font-bold text-gray-900">
+      <%= @notification.params[:title] || 'Contact Form Submission' %>
+    </h1>
+    <p class="text-gray-600 mt-2">
+      <%= time_ago_in_words(@notification.created_at) %> ago
+    </p>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="prose max-w-none">
+      <p class="text-gray-700">
+        <%= @notification.params[:message] || @notification.message %>
+      </p>
+    </div>
+
+    <% if @notification.params[:url] %>
+      <div class="mt-6 pt-6 border-t border-gray-200">
+        <%= link_to @notification.params[:url], 
+            class: "inline-flex items-center px-4 py-2 bg-[#b82025] hover:bg-[#a01c20] text-white font-medium rounded-lg transition-colors",
+            data: { turbo_frame: "_top" } do %>
+          View Details
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

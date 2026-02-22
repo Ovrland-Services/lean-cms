@@ -1,0 +1,129 @@
+pages:
+  home:
+    display_title: "Home"
+    page_order: 1
+    sections:
+      hero:
+        display_title: "Hero"
+        section_order: 1
+        fields:
+          heading:
+            label: "Headline"
+            type: text
+            default: "Build Faster, Ship Smarter"
+          subheading:
+            label: "Sub-headline"
+            type: text
+            default: "LeanCMS gives Rails developers in-context editing without the bloat."
+          body:
+            label: "Body Text"
+            type: rich_text
+            default: "<p>Everything your marketing site needs, nothing it doesn't.</p>"
+          cta_text:
+            label: "CTA Button Text"
+            type: text
+            default: "Get Started"
+          cta_url:
+            label: "CTA Button URL"
+            type: url
+            default: "/contact"
+      features:
+        display_title: "Features"
+        section_order: 2
+        fields:
+          heading:
+            label: "Section Heading"
+            type: text
+            default: "Why Developers Love LeanCMS"
+        cards:
+          max_cards: 6
+          type: feature
+          items:
+            - title: "In-Context Editing"
+              body: "Hover any section to reveal an edit button. Edit content without leaving the page."
+              icon: "checkmark-badge"
+            - title: "9 Content Types"
+              body: "Text, rich text, image, boolean, URL, color, dropdown, cards, and bullets."
+              icon: "sliders"
+            - title: "SQLite First"
+              body: "Optimized for SQLite in production. Simple deployments, no external database."
+              icon: "lightning-bolt"
+            - title: "Kamal Ready"
+              body: "Deploy with Kamal. Pre-built hooks keep content safe during deploys."
+              icon: "globe"
+
+  about:
+    display_title: "About"
+    page_order: 2
+    sections:
+      intro:
+        display_title: "Introduction"
+        section_order: 1
+        fields:
+          heading:
+            label: "Page Heading"
+            type: text
+            default: "About LeanCMS"
+          body:
+            label: "Body"
+            type: rich_text
+            default: "<p>LeanCMS is a Rails Engine built for developers who want a fast, maintainable CMS without an external SaaS dependency.</p>"
+          photo:
+            label: "Team Photo"
+            type: image
+          show_badge:
+            label: "Show Trust Badge"
+            type: boolean
+            default: true
+          badge_text:
+            label: "Badge Text"
+            type: text
+            default: "Open Source since 2025"
+      values:
+        display_title: "Our Values"
+        section_order: 2
+        fields:
+          heading:
+            label: "Section Heading"
+            type: text
+            default: "What We Stand For"
+        bullets:
+          max_items: 6
+          items:
+            - "Lean over bloated — add only what you need"
+            - "Developer experience first"
+            - "Content should be versioned and auditable"
+            - "Deployment should be boring"
+
+  contact:
+    display_title: "Contact"
+    page_order: 3
+    sections:
+      info:
+        display_title: "Contact Info"
+        section_order: 1
+        fields:
+          heading:
+            label: "Page Heading"
+            type: text
+            default: "Get In Touch"
+          body:
+            label: "Intro Text"
+            type: rich_text
+            default: "<p>Have a question or want to work together? Send us a message and we'll get back to you shortly.</p>"
+          map_url:
+            label: "Google Maps URL"
+            type: url
+            default: "https://maps.google.com"
+          accent_color:
+            label: "Accent Color"
+            type: color
+            default: "#2563eb"
+          preferred_contact:
+            label: "Preferred Contact Method"
+            type: dropdown
+            options:
+              - "Email"
+              - "Phone"
+              - "Live Chat"
+            default: "Email"

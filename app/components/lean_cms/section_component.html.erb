@@ -1,0 +1,18 @@
+<% cache cache_key, expires_in: 1.hour do %>
+  <% if can_edit_cms? %>
+    <div class="cms-editable-section"
+         data-cms-section="<%= page_slug %>/<%= section %>"
+         data-controller="cms-sticky-overlay"
+         data-action="mouseenter->cms-sticky-overlay#mouseEnter mouseleave->cms-sticky-overlay#mouseLeave">
+      <%= content %>
+      <div class="cms-edit-overlay" data-cms-sticky-overlay-target="overlay">
+        <div class="cms-edit-controls">
+          <span class="cms-section-title"><%= full_title %></span>
+          <%= link_to 'Edit', edit_url, target: '_blank', class: 'cms-edit-button', data: { turbo: false } %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <%= content %>
+  <% end %>
+<% end %>
