@@ -40,6 +40,8 @@ Rails.application.routes.draw do
     get 'settings', to: 'settings#edit', as: :settings
     patch 'settings', to: 'settings#update'
     patch 'settings/update_override', to: 'settings#update_override'
+    post 'settings/lock', to: 'settings#lock', as: :lock_content
+    post 'settings/unlock', to: 'settings#unlock', as: :unlock_content
 
     # Notification Settings
     resource :notification_settings, only: [:edit, :update] do
