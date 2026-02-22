@@ -9,6 +9,11 @@ module LeanCms
       g.factory_bot dir: "spec/factories"
     end
 
+    # Add gem's JS to Propshaft's asset load path so files can be served
+    initializer "lean_cms.assets" do |app|
+      app.config.assets.paths << root.join("app/javascript")
+    end
+
     # Register the gem's Stimulus controllers with the host app's importmap
     initializer "lean_cms.importmap", before: "importmap" do |app|
       if app.config.respond_to?(:importmap)
