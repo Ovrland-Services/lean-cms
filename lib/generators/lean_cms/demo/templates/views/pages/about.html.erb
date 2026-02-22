@@ -1,0 +1,40 @@
+<%# Demo About page — showcases rich_text, image, boolean, and bullets content types %>
+
+<%= cms_editable_section(page: 'about', section: 'intro', display_title: 'Introduction') do %>
+  <section class="bg-white py-20">
+    <div class="max-w-4xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h1 class="text-4xl font-bold text-gray-900 mb-6">
+          <%= page_content(@page, 'intro', 'heading', default: 'About Us') %>
+        </h1>
+        <div class="prose text-gray-700">
+          <%= page_content_html(@page, 'intro', 'body') %>
+        </div>
+
+        <%# boolean content type: show/hide a badge based on a toggle %>
+        <% if page_content?(@page, 'intro', 'show_badge') %>
+          <div class="mt-6 inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            <%= page_content(@page, 'intro', 'badge_text', default: 'Trusted Since 2020') %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# image content type %>
+      <% img = page_content_image_url(@page, 'intro', 'photo') %>
+      <% if img.present? %>
+        <%= image_tag img, alt: "About us", class: "rounded-xl shadow-lg w-full object-cover aspect-square" %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<%= cms_editable_section(page: 'about', section: 'values', display_title: 'Our Values') do %>
+  <section class="bg-gray-50 py-16">
+    <div class="max-w-4xl mx-auto px-4">
+      <h2 class="text-3xl font-bold text-gray-900 mb-10">
+        <%= page_content(@page, 'values', 'heading', default: 'What We Stand For') %>
+      </h2>
+      <%= bullets_section('values') %>
+    </div>
+  </section>
+<% end %>

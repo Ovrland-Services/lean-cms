@@ -1,0 +1,169 @@
+<div class="cms-field-editor-modal">
+  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900"><%= field.label || field.key.humanize %></h2>
+      <p class="text-sm text-gray-600 mt-1"><%= field.page&.title || field.read_attribute(:page)&.titleize %> › <%= field.section.humanize %></p>
+    </div>
+    <button type="button" data-action="click->field-editor-modal#close"
+            class="text-gray-400 hover:text-gray-600">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <%= form_with url: lean_cms_update_page_content_field_path(field.id),
+                method: :patch,
+                multipart: true,
+                data: { controller: 'field-editor-form', action: 'submit->field-editor-form#handleSubmit' } do |f| %>
+
+    <div class="space-y-4">
+      <% case field.content_type.to_sym %>
+      <% when :rich_text %>
+        <%= rich_text_area_tag 'value', field.display_value,
+            class: 'w-full min-h-[300px] border border-gray-300 rounded-lg' %>
+
+      <% when :bullets %>
+        <%
+          bullets = field.display_value.is_a?(Array) ? field.display_value : []
+          bullets = [''] if bullets.empty?
+        %>
+        <div data-controller="dynamic-list" data-dynamic-list-max-value="20" data-dynamic-list-min-value="1">
+          <div data-dynamic-list-target="list" class="space-y-2">
+            <% bullets.each do |bullet| %>
+              <div data-list-item class="flex gap-3 items-center">
+                <%= text_field_tag "bullet_items[]", bullet,
+                    placeholder: "Enter a bullet point",
+                    class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" %>
+                <button type="button" data-action="click->dynamic-list#remove"
+                        class="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer flex-shrink-0">
+                  <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            <% end %>
+          </div>
+
+          <button type="button" data-action="click->dynamic-list#add"
+                  class="mt-3 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+            <svg class="w-4 h-4 mr-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Bullet Point
+          </button>
+
+          <template data-dynamic-list-target="template">
+            <div data-list-item class="flex gap-3 items-center">
+              <%= text_field_tag "bullet_items[]", "",
+                  placeholder: "Enter a bullet point",
+                  class: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none" %>
+              <button type="button" data-action="click->dynamic-list#remove"
+                      class="p-2 text-gray-400 hover:text-red-500 transition-colors cursor-pointer flex-shrink-0">
+                <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </template>
+        </div>
+
+        <!-- Hidden field to store the bullets field ID for controller processing -->
+        <input type="hidden" name="bullets_field_id" value="<%= field.id %>">
+
+      <% when :cards %>
+        <% cards = field.display_value.is_a?(Array) ? field.display_value : [] %>
+        <%# Add image URLs for existing images so they show in the editor %>
+        <% cards_with_urls = cards.map do |card|
+          card_hash = card.except('image_attachment').to_h.with_indifferent_access
+          if card_hash['image_id'].present? && field.card_images.attached?
+            begin
+              img = field.card_image(card_hash['image_id'])
+              if img.present? && img.blob.present?
+                card_hash['image_url'] = rails_blob_path(img, only_path: true)
+              end
+            rescue => e
+              Rails.logger.warn "Could not load card image: #{e.message}"
+            end
+          end
+          card_hash
+        end %>
+        <div data-controller="cards-editor" data-cards-editor-initial-value="<%= h(cards_with_urls.to_json) %>" class="space-y-4" id="cards-editor-<%= field.id %>">
+          <!-- Cards List Container -->
+          <div data-cards-editor-target="cardsList" class="space-y-3">
+            <!-- Cards will be rendered here by JavaScript -->
+          </div>
+
+          <!-- Add Card Button -->
+          <button type="button" data-action="click->cards-editor#addCard"
+                  class="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors cursor-pointer">
+            + Add Card
+          </button>
+
+          <!-- Hidden input to store JSON -->
+          <input type="hidden" name="value" data-cards-editor-target="hiddenInput">
+        </div>
+
+      <% when :image %>
+        <div class="space-y-3">
+          <% if field.image_file.attached? %>
+            <div class="relative inline-block">
+              <%= image_tag field.image_file, class: "max-w-xs rounded-lg border border-gray-200" %>
+              <div class="mt-2 text-sm text-gray-600">
+                Current image: <%= field.image_file.filename %>
+              </div>
+            </div>
+          <% elsif field.value.present? %>
+            <div class="text-sm text-gray-600">
+              Current URL: <%= field.value %>
+            </div>
+          <% end %>
+
+          <%= file_field_tag "image_file",
+              accept: "image/*",
+              class: "block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" %>
+          <p class="text-xs text-gray-500">Upload a new image to replace the current one</p>
+        </div>
+
+      <% when :boolean %>
+        <div class="flex items-center">
+          <%= check_box_tag 'value', "1", field.display_value,
+              class: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" %>
+          <span class="ml-2 text-sm text-gray-600">Enable this feature</span>
+        </div>
+
+      <% when :url %>
+        <%= url_field_tag 'value', field.display_value,
+            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+            placeholder: "https://example.com" %>
+
+      <% when :color %>
+        <div class="flex items-center space-x-3">
+          <%= color_field_tag 'value', field.display_value || "#000000",
+              class: "w-20 h-10 border border-gray-300 rounded cursor-pointer" %>
+          <%= text_field_tag 'value', field.display_value || "#000000",
+              class: "flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+              placeholder: "#000000" %>
+        </div>
+
+      <% when :dropdown %>
+        <% options = field.options.is_a?(Hash) ? field.options : {} %>
+        <%= select_tag 'value',
+            options_for_select(options, field.display_value),
+            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+
+      <% end %>
+    </div>
+
+    <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+      <button type="button"
+              data-action="click->field-editor-modal#close"
+              class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+        Cancel
+      </button>
+      <%= f.submit 'Save Changes',
+          class: 'px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700' %>
+    </div>
+  <% end %>
+</div>
+

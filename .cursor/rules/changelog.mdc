@@ -1,0 +1,71 @@
+---
+description: Maintain CHANGELOG.md after every change to the lean-cms gem
+globs: ["**/*.rb", "**/*.erb", "**/*.js", "**/*.yml"]
+alwaysApply: true
+---
+
+# LeanCMS Changelog Rule
+
+After **every meaningful change** to this gem, you MUST update `CHANGELOG.md`.
+
+## Format
+
+Follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) strictly:
+
+```markdown
+## [Unreleased]
+
+### Added
+- New feature description
+
+### Changed
+- Changed behaviour description
+
+### Deprecated
+- Deprecated functionality
+
+### Removed
+- Removed functionality
+
+### Fixed
+- Bug fix description
+
+### Security
+- Security fix description
+```
+
+## Rules
+
+1. All changes go under `## [Unreleased]` until a version is released.
+2. Each entry must be a single, concise sentence on a new bullet line.
+3. Use past tense: "Added", "Fixed", "Changed", "Removed", "Deprecated".
+4. When a version is released, rename `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` and add a new empty `## [Unreleased]` section at the top.
+5. Always update the comparison link at the bottom of the file when releasing.
+
+## What counts as a meaningful change
+
+- New helper methods, model methods, or controller actions
+- New content types or CMS settings keys
+- Behaviour changes to existing features
+- Bug fixes (always document)
+- Dependency version changes
+- Breaking changes (mark clearly with **BREAKING**)
+- New generators or generator templates
+
+## What does NOT need a changelog entry
+
+- Whitespace/formatting fixes
+- Comment updates
+- Spec changes with no corresponding source change
+
+## Example entry
+
+```markdown
+## [Unreleased]
+
+### Added
+- `cms_editable_section` and `cms_settings_section` helpers moved from host app into `LeanCms::PageContentHelper`
+
+### Fixed
+- `page_content_image_url` no longer raises when ActiveStorage is not configured
+```

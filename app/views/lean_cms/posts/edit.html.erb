@@ -1,0 +1,31 @@
+<% content_for :title, "Edit Post" %>
+
+<div class="mb-8">
+  <div class="flex items-center text-sm text-gray-600 mb-4">
+    <%= link_to "Posts", lean_cms_posts_path, class: "hover:text-gray-900" %>
+    <svg class="w-4 h-4 mx-2" fill="currentColor" viewBox="0 0 20 20">
+      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span class="text-gray-900">Edit Post</span>
+  </div>
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900"><%= @post.title %></h1>
+      <p class="text-gray-600 mt-2">Last edited by <%= @post.last_edited_by&.email_address %></p>
+    </div>
+
+    <% if @post.versions.any? %>
+      <div class="text-sm text-gray-600">
+        <%= link_to "#", class: "inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          View History (<%= @post.versions.count %>)
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%= render "form", post: @post %>

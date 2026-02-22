@@ -1,0 +1,180 @@
+<% content_for :page_title, "Dashboard" %>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <!-- Published Posts -->
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-sm font-medium text-gray-600">Published Posts</h3>
+      <div class="h-10 w-10 rounded-lg flex items-center justify-center" style="background-color: rgba(37, 99, 235, 0.1);">
+        <svg class="w-5 h-5" style="color: var(--cms-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+    </div>
+    <p class="text-3xl font-bold text-gray-900"><%= @published_posts_count %></p>
+  </div>
+
+  <!-- Draft Posts -->
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-sm font-medium text-gray-600">Draft Posts</h3>
+      <div class="h-10 w-10 rounded-lg flex items-center justify-center bg-yellow-50">
+        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+      </div>
+    </div>
+    <p class="text-3xl font-bold text-gray-900"><%= @draft_posts_count %></p>
+  </div>
+
+  <!-- Unread Submissions -->
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-sm font-medium text-gray-600">Unread Messages</h3>
+      <div class="h-10 w-10 rounded-lg flex items-center justify-center" style="background-color: rgba(184, 32, 37, 0.1);">
+        <svg class="w-5 h-5" style="color: var(--cms-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+      </div>
+    </div>
+    <p class="text-3xl font-bold text-gray-900"><%= @unread_submissions_count %></p>
+  </div>
+
+  <!-- Total Page Sections -->
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-sm font-medium text-gray-600">Page Sections</h3>
+      <div class="h-10 w-10 rounded-lg flex items-center justify-center bg-green-50">
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+        </svg>
+      </div>
+    </div>
+    <p class="text-3xl font-bold text-gray-900"><%= LeanCms::PageContent.count %></p>
+  </div>
+</div>
+
+<!-- Recent Activity Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Recent Posts -->
+  <div class="bg-white rounded-lg border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900">Recent Posts</h2>
+        <%= link_to "View All", lean_cms_posts_path, class: "text-sm font-medium hover:underline", style: "color: var(--cms-primary);" %>
+      </div>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% if @recent_posts.any? %>
+        <% @recent_posts.each do |post| %>
+          <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+            <%= link_to edit_lean_cms_post_path(post), class: "block" do %>
+              <div class="flex items-start justify-between">
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate"><%= post.title %></p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    <%= format_datetime(post.created_at) %> by <%= post.author.email_address.split('@').first %>
+                  </p>
+                </div>
+                <span class="ml-4 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_badge_class(post.status) %>">
+                  <%= post.status.titleize %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="px-6 py-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <p class="mt-2 text-sm text-gray-600">No posts yet</p>
+          <%= link_to "Create your first post", new_lean_cms_post_path, class: "mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white transition-colors hover:opacity-90", style: "background-color: var(--cms-primary);" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Recent Form Submissions -->
+  <div class="bg-white rounded-lg border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900">Recent Submissions</h2>
+        <%= link_to "View All", lean_cms_form_submissions_path, class: "text-sm font-medium hover:underline", style: "color: var(--cms-primary);" %>
+      </div>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% if @recent_submissions.any? %>
+        <% @recent_submissions.each do |submission| %>
+          <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+            <%= link_to lean_cms_form_submission_path(submission), class: "block" do %>
+              <div class="flex items-start justify-between">
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate">
+                    <%= submission.name || submission.email %>
+                  </p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    <%= submission.form_type.titleize %> - <%= format_datetime(submission.created_at) %>
+                  </p>
+                </div>
+                <span class="ml-4 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_badge_class(submission.status) %>">
+                  <%= submission.status.titleize.gsub('_', ' ') %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="px-6 py-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          <p class="mt-2 text-sm text-gray-600">No submissions yet</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100 p-6">
+  <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <%= link_to new_lean_cms_post_path, class: "flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all" do %>
+      <div class="h-10 w-10 rounded-lg flex items-center justify-center mr-4" style="background-color: var(--cms-primary);">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+      </div>
+      <div>
+        <p class="font-medium text-gray-900">Create Post</p>
+        <p class="text-xs text-gray-500">New blog post or portfolio item</p>
+      </div>
+    <% end %>
+
+    <%= link_to lean_cms_page_contents_path, class: "flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all" do %>
+      <div class="h-10 w-10 rounded-lg flex items-center justify-center bg-blue-100 mr-4">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="font-medium text-gray-900">Edit Pages</p>
+        <p class="text-xs text-gray-500">Update page content</p>
+      </div>
+    <% end %>
+
+    <%= link_to root_path, target: "_blank", class: "flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all" do %>
+      <div class="h-10 w-10 rounded-lg flex items-center justify-center bg-green-100 mr-4">
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+      </div>
+      <div>
+        <p class="font-medium text-gray-900">View Site</p>
+        <p class="text-xs text-gray-500">See your live website</p>
+      </div>
+    <% end %>
+  </div>
+</div>

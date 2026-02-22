@@ -1,0 +1,31 @@
+<%# Demo Home page — showcases text, rich_text, url, and cards content types %>
+
+<%= cms_editable_section(page: 'home', section: 'hero', display_title: 'Hero') do %>
+  <section class="bg-white py-20 text-center">
+    <div class="max-w-3xl mx-auto px-4">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        <%= page_content(@page, 'hero', 'heading', default: 'Welcome') %>
+      </h1>
+      <p class="text-xl text-gray-600 mb-4">
+        <%= page_content(@page, 'hero', 'subheading') %>
+      </p>
+      <div class="prose mx-auto text-gray-700 mb-8">
+        <%= page_content_html(@page, 'hero', 'body') %>
+      </div>
+      <% cta_url  = page_content(@page, 'hero', 'cta_url',  default: '#') %>
+      <% cta_text = page_content(@page, 'hero', 'cta_text', default: 'Get Started') %>
+      <%= link_to cta_text, cta_url, class: "inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition" %>
+    </div>
+  </section>
+<% end %>
+
+<%= cms_editable_section(page: 'home', section: 'features', display_title: 'Features') do %>
+  <section class="bg-gray-50 py-16">
+    <div class="max-w-5xl mx-auto px-4">
+      <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">
+        <%= page_content(@page, 'features', 'heading', default: 'Why Choose Us') %>
+      </h2>
+      <%= cards_section('features') %>
+    </div>
+  </section>
+<% end %>

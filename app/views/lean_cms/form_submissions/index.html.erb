@@ -1,0 +1,104 @@
+<% content_for :title, "Form Submissions" %>
+
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-gray-900">Form Submissions</h1>
+  <p class="text-gray-600 mt-2">View and manage form submissions from your website</p>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+  <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-2">
+      <span class="text-sm font-medium text-gray-700">Filter by:</span>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <%= link_to lean_cms_form_submissions_path, class: "px-3 py-1.5 text-sm rounded-lg #{params[:status].blank? ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition-colors" do %>
+        All
+      <% end %>
+
+      <% LeanCms::FormSubmission.statuses.keys.each do |status_key| %>
+        <%= link_to lean_cms_form_submissions_path(status: status_key), class: "px-3 py-1.5 text-sm rounded-lg #{params[:status] == status_key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition-colors capitalize" do %>
+          <%= status_key.gsub('_', ' ') %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% if @form_submissions.any? %>
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-200 bg-gray-50">
+            <th class="text-left px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+            <th class="text-left px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">From</th>
+            <th class="text-left px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Form Type</th>
+            <th class="text-left px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Message</th>
+            <th class="text-left px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Submitted</th>
+            <th class="text-right px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @form_submissions.each do |submission| %>
+            <tr class="hover:bg-gray-50 transition-colors <%= 'bg-blue-50' if submission.new_submission? %>">
+              <td class="px-6 py-4">
+                <% case submission.status %>
+                <% when 'new_submission' %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <circle cx="10" cy="10" r="3"/>
+                    </svg>
+                    New
+                  </span>
+                <% when 'read' %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    Read
+                  </span>
+                <% when 'replied' %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Replied
+                  </span>
+                <% when 'archived' %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    Archived
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4">
+                <div class="font-medium text-gray-900"><%= submission.name || "—" %></div>
+                <div class="text-sm text-gray-500"><%= submission.email %></div>
+                <% if submission.phone.present? %>
+                  <div class="text-sm text-gray-500"><%= submission.phone %></div>
+                <% end %>
+              </td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-gray-900 capitalize">
+                  <%= submission.form_type.gsub('_', ' ') %>
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600">
+                <%= truncate(submission.message, length: 80) if submission.message.present? %>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600">
+                <%= time_ago_in_words(submission.created_at) %> ago
+              </td>
+              <td class="px-6 py-4 text-right">
+                <%= link_to "View", lean_cms_form_submission_path(submission), class: "inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% else %>
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+    <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">No form submissions yet</h3>
+    <p class="text-gray-600">Form submissions will appear here when visitors fill out forms on your website.</p>
+  </div>
+<% end %>

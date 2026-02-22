@@ -1,0 +1,118 @@
+<%= form_with(model: @post, url: @post.new_record? ? lean_cms_posts_path : lean_cms_post_path(@post), local: true, class: "space-y-6") do |f| %>
+  <% if @post.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+          <h3 class="text-sm font-medium text-red-800 mb-2">
+            <%= pluralize(@post.errors.count, "error") %> prohibited this post from being saved:
+          </h3>
+          <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
+            <% @post.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-6">Post Details</h2>
+
+    <div class="space-y-6">
+      <!-- Content Type -->
+      <div>
+        <%= f.label :content_type, "Post Type", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <div class="flex space-x-4">
+          <label class="flex items-center">
+            <%= f.radio_button :content_type, "blog", class: "w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" %>
+            <span class="ml-2 text-sm text-gray-700">Blog Post</span>
+          </label>
+          <label class="flex items-center">
+            <%= f.radio_button :content_type, "portfolio", class: "w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" %>
+            <span class="ml-2 text-sm text-gray-700">Portfolio Item</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div>
+        <%= f.label :title, class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.text_field :title, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-blue-600 focus:outline-solid", placeholder: "Enter post title" %>
+      </div>
+
+      <!-- Slug -->
+      <div>
+        <%= f.label :slug, class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <div class="flex items-center">
+          <span class="text-sm text-gray-500 mr-2">/blog/</span>
+          <%= f.text_field :slug, class: "flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-blue-600 focus:outline-solid", placeholder: "post-slug" %>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">URL-friendly version of the title. Leave blank to auto-generate.</p>
+      </div>
+
+      <!-- Excerpt -->
+      <div>
+        <%= f.label :excerpt, class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.text_area :excerpt, rows: 3, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-blue-600 focus:outline-solid", placeholder: "Brief summary of the post (shown in listings)" %>
+      </div>
+
+      <!-- Featured Image -->
+      <div>
+        <%= f.label :featured_image, "Featured Image", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <% if @post.featured_image.attached? %>
+          <div class="mb-4">
+            <%= image_tag @post.featured_image, class: "max-w-md h-auto rounded-lg border border-gray-300", alt: @post.title %>
+            <p class="text-xs text-gray-500 mt-2">Current featured image</p>
+          </div>
+        <% end %>
+        <%= f.file_field :featured_image, 
+            accept: "image/*",
+            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-blue-600 focus:outline-solid file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
+        <p class="text-xs text-gray-500 mt-1">Upload a featured image for this post. Recommended size: 1200x630px for best display.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body Content -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-6">Content</h2>
+    <%= f.label :body, class: "block text-sm font-medium text-gray-700 mb-2" %>
+    <%= f.rich_text_area :body, class: "w-full" %>
+  </div>
+
+  <!-- Publishing Options -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-6">Publishing</h2>
+
+    <div class="space-y-6">
+      <!-- Status -->
+      <div>
+        <%= f.label :status, class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.select :status,
+                     LeanCms::Post.statuses.keys.map { |s| [s.titleize, s] },
+                     {},
+                     class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-blue-600 focus:outline-solid" %>
+      </div>
+
+      <!-- Published At -->
+      <div>
+        <%= f.label :published_at, "Publish Date & Time", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.datetime_local_field :published_at,
+                                    value: (@post.published_at || Time.current).strftime("%Y-%m-%dT%H:%M"),
+                                    class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-blue-600 focus:outline-solid" %>
+        <p class="text-xs text-gray-500 mt-1">Posts will only be visible if published and the date/time has passed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex items-center justify-end space-x-4 bg-gray-50 rounded-lg p-6 border border-gray-200">
+    <%= link_to "Cancel", lean_cms_posts_path, class: "px-4 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors" %>
+    <%= f.submit @post.new_record? ? "Create Post" : "Update Post",
+                 class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors font-medium" %>
+  </div>
+<% end %>

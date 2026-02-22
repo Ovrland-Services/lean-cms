@@ -1,0 +1,237 @@
+<% cache cache_key, expires_in: 1.hour do %>
+  <% cards_data = cards %>
+  <% if cards_data.empty? %>
+    <% return %>
+  <% end %>
+
+  <% if can_edit_cms? && field %>
+    <%= content_tag(:div, class: 'cms-inline-field relative', data: data_attributes) do %>
+      <div class="grid md:grid-cols-<%= grid_cols %> gap-<%= gap %> <%= container_class %>"<% if scroll_animate %> data-controller="scroll-animate" data-scroll-animate-stagger-value="<%= stagger_delay %>"<% end %>>
+    <% cards_data.each do |card| %>
+      <%
+        # Parse card data (handle both string and symbol keys)
+        icon = card['icon'] || card[:icon]
+        icon_color = card['icon_color'] || card[:icon_color]
+        bg_color = card['bg_color'] || card[:bg_color]
+        heading = card['heading'] || card[:heading]
+        text = card['text'] || card[:text]
+        alignment = text_align || card['alignment'] || card[:alignment] || 'center'
+        use_image = card['use_image'] == true || card['use_image'] == 'true'
+        image_id = card['image_id'] || card[:image_id]
+        card_image = nil
+        
+        # Get image attachment if use_image is true and image_id is present
+        if use_image && image_id.present? && field
+          card_image = field.card_image(image_id)
+        end
+
+        # Determine styling classes
+        text_align_class = case alignment
+          when 'left' then 'text-left'
+          when 'right' then 'text-right'
+          else 'text-center'
+        end
+
+        # Handle gradient backgrounds (skip if ignore_card_bg is true)
+        has_gradient = !ignore_card_bg && bg_color&.include?('gradient')
+        bg_gradient_class = if ignore_card_bg
+          nil
+        else
+          case bg_color
+            when 'gradient-red'
+              'bg-gradient-to-br from-[#b82025] to-[#a01c20] text-white'
+            when 'gradient-blue'
+              'bg-gradient-to-br from-[#2563eb] to-[#1e40af] text-white'
+            else
+              nil
+          end
+        end
+
+        # Regular background color (skip if ignore_card_bg is true)
+        bg_style = nil
+        is_dark_bg = false
+        if !ignore_card_bg && !has_gradient && bg_color&.start_with?('#')
+          bg_style = "background-color: #{bg_color};"
+          # Detect actual brightness so light colors (e.g. #dbeafe) get dark text
+          hex_match = bg_color.match(/#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i)
+          if hex_match
+            r, g, b = hex_match[1].to_i(16), hex_match[2].to_i(16), hex_match[3].to_i(16)
+            brightness = (r * 299 + g * 587 + b * 114) / 1000
+            is_dark_bg = brightness < 128
+          end
+        end
+
+        # Determine if we need light text (for dark backgrounds or gradients)
+        use_light_text = !ignore_card_bg && (has_gradient || is_dark_bg)
+      %>
+
+      <div class="<%= card_class %> <%= bg_gradient_class %> <%= text_align_class %>"
+           <% if bg_style %>style="<%= bg_style %>"<% end %>>
+
+        <%# Render image or icon if present %>
+        <% if use_image && card_image %>
+          <%# Display uploaded image - resize to 512x512 for retina displays, CSS will scale down %>
+          <div class="w-<%= icon_size %> h-<%= icon_size %>
+                      <%= alignment == 'center' ? 'mx-auto' : '' %>
+                      mb-<%= alignment == 'center' ? '4' : '6' %>
+                      flex items-center justify-center">
+            <%= image_tag card_image.variant(resize_to_limit: [512, 512]), 
+                class: "w-full h-full object-contain",
+                alt: heading.presence || 'Card image' %>
+          </div>
+        <% elsif icon.present? %>
+          <% if icon_bg_gradient %>
+            <%# Red gradient icon box (like landing page service cards) %>
+            <div class="w-<%= icon_size %> h-<%= icon_size %>
+                        rounded-xl
+                        flex items-center justify-center
+                        <%= alignment == 'center' ? 'mx-auto' : '' %>
+                        mb-6"
+                 style="background: linear-gradient(135deg, #b82025, #d92028);">
+              <%= helpers.render_card_icon(icon, 'white', true) %>
+            </div>
+          <% else %>
+            <div class="w-<%= icon_size %> h-<%= icon_size %>
+                        <%= use_light_text ? 'bg-white/20' : (bg_color&.start_with?('#') ? '' : "bg-#{bg_color}") %>
+                        rounded-<%= icon_shape %>
+                        flex items-center justify-center
+                        <%= alignment == 'center' ? 'mx-auto' : '' %>
+                        mb-<%= alignment == 'center' ? '4' : '6' %>">
+              <%= helpers.render_card_icon(icon, icon_color, use_light_text) %>
+            </div>
+          <% end %>
+        <% end %>
+
+        <%# Render heading %>
+        <% if heading.present? %>
+          <h3 class="text-<%= alignment == 'center' ? 'xl' : '2xl' %> font-bold mb-<%= alignment == 'center' ? '2' : '4' %>
+                     <%= use_light_text ? 'text-white' : 'text-slate-800' %>">
+            <%= heading %>
+          </h3>
+        <% end %>
+
+        <%# Render text/description %>
+        <% if text.present? %>
+          <p class="leading-relaxed <%= use_light_text ? 'text-white opacity-90' : 'text-slate-500' %>">
+            <%= text %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+    <% end %>
+  <% else %>
+    <div class="grid md:grid-cols-<%= grid_cols %> gap-<%= gap %> <%= container_class %>"<% if scroll_animate %> data-controller="scroll-animate" data-scroll-animate-stagger-value="<%= stagger_delay %>"<% end %>>
+      <% cards_data.each do |card| %>
+        <%
+          # Parse card data (handle both string and symbol keys)
+          icon = card['icon'] || card[:icon]
+          icon_color = card['icon_color'] || card[:icon_color]
+          bg_color = card['bg_color'] || card[:bg_color]
+          heading = card['heading'] || card[:heading]
+          text = card['text'] || card[:text]
+          alignment = text_align || card['alignment'] || card[:alignment] || 'center'
+          use_image = card['use_image'] == true || card['use_image'] == 'true'
+          image_id = card['image_id'] || card[:image_id]
+          card_image = nil
+          
+          # Get image attachment if use_image is true and image_id is present
+          if use_image && image_id.present? && field
+            card_image = field.card_image(image_id)
+          end
+
+          # Determine styling classes
+          text_align_class = case alignment
+            when 'left' then 'text-left'
+            when 'right' then 'text-right'
+            else 'text-center'
+          end
+
+          # Handle gradient backgrounds (skip if ignore_card_bg is true)
+          has_gradient = !ignore_card_bg && bg_color&.include?('gradient')
+          bg_gradient_class = if ignore_card_bg
+            nil
+          else
+            case bg_color
+              when 'gradient-red'
+                'bg-gradient-to-br from-[#b82025] to-[#a01c20] text-white'
+              when 'gradient-blue'
+                'bg-gradient-to-br from-blue-600 to-blue-800 text-white'
+              else
+                nil
+            end
+          end
+
+          # Regular background color (skip if ignore_card_bg is true)
+          bg_style = nil
+          is_dark_bg = false
+          if !ignore_card_bg && !has_gradient && bg_color&.start_with?('#')
+            bg_style = "background-color: #{bg_color};"
+            # Detect actual brightness so light colors (e.g. #dbeafe) get dark text
+            hex_match = bg_color.match(/#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i)
+            if hex_match
+              r, g, b = hex_match[1].to_i(16), hex_match[2].to_i(16), hex_match[3].to_i(16)
+              brightness = (r * 299 + g * 587 + b * 114) / 1000
+              is_dark_bg = brightness < 128
+            end
+          end
+
+          # Determine if we need light text (for dark backgrounds or gradients)
+          use_light_text = !ignore_card_bg && (has_gradient || is_dark_bg)
+        %>
+
+        <div class="<%= card_class %> <%= bg_gradient_class %> <%= text_align_class %>"
+             <% if bg_style %>style="<%= bg_style %>"<% end %>>
+
+          <%# Render image or icon if present %>
+          <% if use_image && card_image %>
+            <%# Display uploaded image - resize to 512x512 for retina displays, CSS will scale down %>
+            <div class="w-<%= icon_size %> h-<%= icon_size %>
+                        <%= alignment == 'center' ? 'mx-auto' : '' %>
+                        mb-<%= alignment == 'center' ? '4' : '6' %>
+                        flex items-center justify-center">
+              <%= image_tag card_image.variant(resize_to_limit: [512, 512]), 
+                  class: "w-full h-full object-contain",
+                  alt: heading.presence || 'Card image' %>
+            </div>
+          <% elsif icon.present? %>
+            <% if icon_bg_gradient %>
+              <%# Red gradient icon box (like landing page service cards) %>
+              <div class="w-<%= icon_size %> h-<%= icon_size %>
+                          rounded-xl
+                          flex items-center justify-center
+                          <%= alignment == 'center' ? 'mx-auto' : '' %>
+                          mb-6"
+                   style="background: linear-gradient(135deg, #b82025, #a01c20);">
+                <%= helpers.render_card_icon(icon, 'white', true) %>
+              </div>
+            <% else %>
+              <div class="w-<%= icon_size %> h-<%= icon_size %>
+                          <%= use_light_text ? 'bg-white/20' : (bg_color&.start_with?('#') ? '' : "bg-#{bg_color}") %>
+                          rounded-<%= icon_shape %>
+                          flex items-center justify-center
+                          <%= alignment == 'center' ? 'mx-auto' : '' %>
+                          mb-<%= alignment == 'center' ? '4' : '6' %>">
+                <%= helpers.render_card_icon(icon, icon_color, use_light_text) %>
+              </div>
+            <% end %>
+          <% end %>
+
+          <%# Render heading %>
+          <% if heading.present? %>
+            <h3 class="text-<%= alignment == 'center' ? 'xl' : '2xl' %> font-bold mb-<%= alignment == 'center' ? '2' : '4' %>
+                       <%= use_light_text ? 'text-white' : 'text-slate-800' %>">
+              <%= heading %>
+            </h3>
+          <% end %>
+
+          <%# Render text/description %>
+          <% if text.present? %>
+            <p class="leading-relaxed <%= use_light_text ? 'text-white opacity-90' : 'text-slate-500' %>">
+              <%= text %>
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

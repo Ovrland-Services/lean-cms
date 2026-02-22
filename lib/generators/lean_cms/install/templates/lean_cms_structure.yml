@@ -1,0 +1,29 @@
+pages:
+  home:
+    display_title: "Home"
+    page_order: 1
+    sections:
+      hero:
+        display_title: "Hero"
+        section_order: 1
+        fields:
+          heading:
+            label: "Headline"
+            type: text
+            default: "Welcome to My Site"
+          subheading:
+            label: "Subheadline"
+            type: text
+            default: "A great place to start"
+          body:
+            label: "Body Text"
+            type: rich_text
+            default: "<p>Tell visitors what makes your business special.</p>"
+          cta_text:
+            label: "CTA Button Text"
+            type: text
+            default: "Get Started"
+          cta_url:
+            label: "CTA Button URL"
+            type: url
+            default: "/contact"

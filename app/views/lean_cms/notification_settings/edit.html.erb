@@ -1,0 +1,192 @@
+<div class="max-w-4xl">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Notification Settings</h1>
+    <p class="text-gray-600 mt-2">Configure how you receive notifications for contact form submissions</p>
+  </div>
+
+  <%= form_with url: lean_cms_notification_settings_path, method: :patch, class: "space-y-6" do |f| %>
+
+    <!-- Email Notifications -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6" data-controller="toggle-fields">
+      <div class="flex items-start mb-4">
+        <div class="flex items-center h-5">
+          <%= check_box_tag 'email_enabled', '1', @settings.email_enabled?,
+              class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2",
+              data: { action: "change->toggle-fields#toggle" } %>
+        </div>
+        <div class="ml-3 flex-1">
+          <label for="email_enabled" class="font-semibold text-gray-900 text-lg">
+            Email Notifications
+          </label>
+          <p class="text-sm text-gray-600 mt-1">
+            Receive email notifications when contact form submissions are received. You'll receive the full form details.
+          </p>
+        </div>
+      </div>
+
+      <div data-toggle-fields-target="fields" class="<%= 'hidden' unless @settings.email_enabled? %> space-y-4 mt-4 pt-4 border-t border-gray-200" data-controller="email-provider">
+        <!-- Email Provider Selection -->
+        <div>
+          <label for="email_provider" class="block text-sm font-medium text-gray-700 mb-2">Email Provider</label>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <%= radio_button_tag 'email_provider', 'sendgrid', @settings.email_provider == 'sendgrid',
+                  class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 focus:ring-[#b82025] focus:ring-2",
+                  data: { action: "change->email-provider#change" } %>
+              <label for="email_provider_sendgrid" class="ml-2 text-sm font-medium text-gray-700">Sendgrid</label>
+            </div>
+            <div class="flex items-center">
+              <%= radio_button_tag 'email_provider', 'mailgun', @settings.email_provider == 'mailgun',
+                  class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 focus:ring-[#b82025] focus:ring-2",
+                  data: { action: "change->email-provider#change" } %>
+              <label for="email_provider_mailgun" class="ml-2 text-sm font-medium text-gray-700">Mailgun</label>
+            </div>
+            <div class="flex items-center">
+              <%= radio_button_tag 'email_provider', 'none', @settings.email_provider == 'none' || @settings.email_provider.blank?,
+                  class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 focus:ring-[#b82025] focus:ring-2",
+                  data: { action: "change->email-provider#change" } %>
+              <label for="email_provider_none" class="ml-2 text-sm font-medium text-gray-700">None</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sendgrid Credentials -->
+        <div data-email-provider-target="sendgridFields" class="<%= 'hidden' unless @settings.email_provider == 'sendgrid' %> space-y-4 mt-4">
+          <div>
+            <label for="sendgrid_api_key" class="block text-sm font-medium text-gray-700 mb-1">Sendgrid API Key</label>
+            <%= password_field_tag :sendgrid_api_key, '',
+                placeholder: @settings.sendgrid_api_key.present? ? "Enter new key or leave blank to keep existing" : "Enter your Sendgrid API key",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+            <p class="text-xs text-gray-500 mt-1"><%= @settings.sendgrid_api_key.present? ? "Key is set. Enter a new value to change it." : "Enter your Sendgrid API key" %></p>
+          </div>
+        </div>
+
+        <!-- Mailgun Credentials -->
+        <div data-email-provider-target="mailgunFields" class="<%= 'hidden' unless @settings.email_provider == 'mailgun' %> space-y-4 mt-4">
+          <div>
+            <label for="mailgun_api_key" class="block text-sm font-medium text-gray-700 mb-1">Mailgun API Key</label>
+            <%= password_field_tag :mailgun_api_key, '',
+                placeholder: @settings.mailgun_api_key.present? ? "Enter new key or leave blank to keep existing" : "Enter your Mailgun API key",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+            <p class="text-xs text-gray-500 mt-1"><%= @settings.mailgun_api_key.present? ? "Key is set. Enter a new value to change it." : "Enter your Mailgun API key" %></p>
+          </div>
+          <div>
+            <label for="mailgun_domain" class="block text-sm font-medium text-gray-700 mb-1">Mailgun Domain</label>
+            <%= text_field_tag :mailgun_domain, @settings.mailgun_domain,
+                placeholder: "e.g., mg.example.com",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          </div>
+        </div>
+
+        <!-- Notification Email Recipients -->
+        <div>
+          <label for="notification_emails" class="block text-sm font-medium text-gray-700 mb-1">Recipient Email Addresses</label>
+          <%= text_field_tag :notification_emails, @settings.notification_email_list.join(', '),
+              placeholder: "email1@example.com, email2@example.com",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          <p class="text-xs text-gray-500 mt-1">Separate multiple emails with commas</p>
+        </div>
+
+        <!-- Test Email Button -->
+        <div class="pt-2">
+          <%= link_to "Send Test Email", test_email_lean_cms_notification_settings_path,
+              method: :post,
+              class: "inline-flex items-center px-4 py-2 text-sm font-medium text-[#b82025] border border-[#b82025] rounded-lg hover:bg-[#b82025] hover:text-white transition-colors",
+              data: { confirm: "This will send a test notification. Continue?" } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMS Notifications -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6" data-controller="toggle-fields">
+      <div class="flex items-start mb-4">
+        <div class="flex items-center h-5">
+          <%= check_box_tag 'sms_enabled', '1', @settings.sms_enabled?,
+              class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2",
+              data: { action: "change->toggle-fields#toggle" } %>
+        </div>
+        <div class="ml-3 flex-1">
+          <label for="sms_enabled" class="font-semibold text-gray-900 text-lg">
+            SMS Notifications (Twilio)
+          </label>
+          <p class="text-sm text-gray-600 mt-1">
+            Receive SMS text messages when contact form submissions are received. You'll receive a brief notification.
+          </p>
+        </div>
+      </div>
+
+      <div data-toggle-fields-target="fields" class="<%= 'hidden' unless @settings.sms_enabled? %> space-y-4 mt-4 pt-4 border-t border-gray-200">
+        <!-- Twilio Credentials -->
+        <div>
+          <label for="twilio_account_sid" class="block text-sm font-medium text-gray-700 mb-1">Twilio Account SID</label>
+          <%= password_field_tag :twilio_account_sid, '',
+              placeholder: @settings.twilio_account_sid.present? ? "Enter new SID or leave blank to keep existing" : "Enter your Twilio Account SID",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          <p class="text-xs text-gray-500 mt-1"><%= @settings.twilio_account_sid.present? ? "SID is set. Enter a new value to change it." : "Enter your Twilio Account SID" %></p>
+        </div>
+
+        <div>
+          <label for="twilio_auth_token" class="block text-sm font-medium text-gray-700 mb-1">Twilio Auth Token</label>
+          <%= password_field_tag :twilio_auth_token, '',
+              placeholder: @settings.twilio_auth_token.present? ? "Enter new token or leave blank to keep existing" : "Enter your Twilio Auth Token",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          <p class="text-xs text-gray-500 mt-1"><%= @settings.twilio_auth_token.present? ? "Token is set. Enter a new value to change it." : "Enter your Twilio Auth Token" %></p>
+        </div>
+
+        <div>
+          <label for="twilio_from_number" class="block text-sm font-medium text-gray-700 mb-1">Twilio From Number</label>
+          <%= text_field_tag :twilio_from_number, @settings.twilio_from_number,
+              placeholder: "+1234567890",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          <p class="text-xs text-gray-500 mt-1">The phone number your SMS will be sent from (must be verified in Twilio)</p>
+        </div>
+
+        <!-- Notification Phone Recipients -->
+        <div>
+          <label for="notification_phones" class="block text-sm font-medium text-gray-700 mb-1">Recipient Phone Numbers</label>
+          <%= text_field_tag :notification_phones, @settings.notification_phone_list.join(', '),
+              placeholder: "+1234567890, +1987654321",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#b82025]/20 focus:border-[#b82025] outline-none" %>
+          <p class="text-xs text-gray-500 mt-1">Separate multiple phone numbers with commas. Include country code (e.g., +1 for US)</p>
+        </div>
+
+        <!-- Test SMS Button -->
+        <div class="pt-2">
+          <%= link_to "Send Test SMS", test_sms_lean_cms_notification_settings_path,
+              method: :post,
+              class: "inline-flex items-center px-4 py-2 text-sm font-medium text-[#b82025] border border-[#b82025] rounded-lg hover:bg-[#b82025] hover:text-white transition-colors",
+              data: { confirm: "This will send a test SMS notification. Continue?" } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- In-App Notifications -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="flex items-start">
+        <div class="flex items-center h-5">
+          <%= check_box_tag 'in_app_enabled', '1', @settings.in_app_enabled?,
+              class: "w-4 h-4 text-[#b82025] bg-gray-100 border-gray-300 rounded focus:ring-[#b82025] focus:ring-2" %>
+        </div>
+        <div class="ml-3 flex-1">
+          <label for="in_app_enabled" class="font-semibold text-gray-900 text-lg">
+            In-App Notifications
+          </label>
+          <p class="text-sm text-gray-600 mt-1">
+            Show notifications in the CMS admin panel when contact form submissions are received. These appear in the notification bell icon.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="flex items-center justify-between pt-4">
+      <div class="text-sm text-gray-600">
+        Changes take effect immediately after saving
+      </div>
+      <div class="flex items-center gap-3">
+        <%= link_to "Cancel", lean_cms_root_path, class: "px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors" %>
+        <%= f.submit "Save Settings", class: "px-6 py-2 bg-[#b82025] hover:bg-[#a01c20] text-white font-semibold rounded-lg transition-colors cursor-pointer" %>
+      </div>
+    </div>
+  <% end %>
+</div>
