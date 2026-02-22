@@ -36,5 +36,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/OvrlandServices/lean-cms/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/OvrlandServices/lean-cms/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Ovrland-Services/lean-cms/releases/tag/v0.1.0
