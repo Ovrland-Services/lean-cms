@@ -17,8 +17,8 @@ Gem::Specification.new do |spec|
 
   spec.metadata = {
     "homepage_uri"    => "https://leancms.dev",
-    "source_code_uri" => "https://github.com/OvrlandServices/lean-cms",
-    "changelog_uri"   => "https://github.com/OvrlandServices/lean-cms/blob/main/CHANGELOG.md"
+    "source_code_uri" => "https://github.com/Ovrland-Services/lean-cms",
+    "changelog_uri"   => "https://github.com/Ovrland-Services/lean-cms/blob/main/CHANGELOG.md"
   }
 
   spec.files = Dir[
