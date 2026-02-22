@@ -56,6 +56,27 @@
       <!-- Top Header -->
       <%= render 'lean_cms/shared/header' %>
 
+      <!-- Content Lock Banner -->
+      <% if content_locked? %>
+        <% lock_info = content_lock_info %>
+        <div class="bg-amber-50 border-b border-amber-300 px-6 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <div>
+              <span class="font-semibold text-amber-800">Content editing is locked.</span>
+              <span class="text-amber-700 ml-1"><%= lock_info[:reason] %></span>
+              <% if lock_info[:locked_at].present? %>
+                <span class="text-amber-600 text-sm ml-2">Locked <%= time_ago_in_words(Time.parse(lock_info[:locked_at])) %> ago.</span>
+              <% end %>
+            </div>
+          </div>
+          <%= button_to 'Unlock', lean_cms_unlock_content_path, method: :post,
+                class: "text-sm font-medium px-3 py-1 rounded bg-amber-200 hover:bg-amber-300 text-amber-900 transition-colors" %>
+        </div>
+      <% end %>
+
       <!-- Content Area -->
       <main class="flex-1 overflow-y-auto bg-gray-50 p-6 pb-20">
         <% if notice.present? %>

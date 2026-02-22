@@ -2,7 +2,7 @@ module LeanCms
   class PageContentsController < LeanCms::ApplicationController
     before_action :require_page_editing
     skip_before_action :check_content_lock
-    before_action :check_content_lock, only: [:update]
+    before_action :check_content_lock, only: [:update, :update_field, :undo_field]
 
     def index
       # Get all pages that have content associated with them
