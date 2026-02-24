@@ -33,6 +33,24 @@ module LeanCms
     # Load rake tasks
     rake_tasks do
       load LeanCms::Engine.root.join("lib/tasks/lean_cms.rake")
+
+      # Ensure app/assets/builds/tailwind/lean_cms.css exists before tailwindcss:build
+      # compiles application.css. tailwindcss-rails v4 calls tailwindcss:engines first,
+      # which calls Engines.bundle — but if the engine isn't auto-detected (e.g. on a
+      # fresh bundle), we create the file explicitly as a fallback.
+      if Rake::Task.task_defined?("tailwindcss:engines")
+        Rake::Task["tailwindcss:engines"].enhance do
+          builds_dir = Rails.root.join("app/assets/builds/tailwind")
+          output = builds_dir.join("lean_cms.css")
+          next if output.exist?
+
+          FileUtils.mkdir_p(builds_dir)
+          engine_css = LeanCms::Engine.root.join("app/assets/tailwind/lean_cms/engine.css")
+          File.write(output,
+            engine_css.exist? ? "@import \"#{engine_css}\";\n" : "/* lean_cms: engine.css not found */\n"
+          )
+        end
+      end
     end
   end
 end
