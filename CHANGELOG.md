@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `app/assets/tailwind/lean_cms/engine.css` — hooks into `tailwindcss-rails` v4 engine support so the gem's views and Stimulus controllers are scanned when compiling Tailwind CSS in the host app, fixing missing utility classes in production
 - Content Sync card in Settings page showing live lock status with lock/unlock buttons and reason field
 - Lock status banner in the CMS admin layout — displayed prominently across all pages when content is locked, with an inline Unlock button
 
