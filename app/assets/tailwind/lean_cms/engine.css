@@ -1,0 +1,6 @@
+/* LeanCMS engine Tailwind sources.
+   tailwindcss-rails auto-imports this via app/assets/builds/tailwind/lean_cms.css.
+   Paths are relative to this file's location inside the gem. */
+
+@source "../../../../app/views/**/*.erb";
+@source "../../../../app/javascript/controllers/**/*.js";
