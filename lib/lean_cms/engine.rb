@@ -46,10 +46,10 @@ module LeanCms
     end
 
     # Ensure host app always has a resolvable edit-controls stylesheet path.
-    # This avoids Propshaft engine path edge cases by writing the file directly
-    # into app/assets/lean_cms/ when missing.
+    # Place it under app/assets/stylesheets so stylesheet logical path resolution
+    # matches `stylesheet_link_tag "lean_cms/cms_edit_controls"`.
     initializer "lean_cms.edit_controls_css" do |app|
-      host_css = app.root.join("app/assets/lean_cms/cms_edit_controls.css")
+      host_css = app.root.join("app/assets/stylesheets/lean_cms/cms_edit_controls.css")
       next if host_css.exist?
 
       require "fileutils"
