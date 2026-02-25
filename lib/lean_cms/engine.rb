@@ -9,12 +9,8 @@ module LeanCms
       g.factory_bot dir: "spec/factories"
     end
 
-    # Register asset subdirectories via Rails' path system so Propshaft discovers them
-    # before it builds its Assembly. Using paths[] here (evaluated at class load time)
-    # is more reliable than an initializer which may run after Propshaft locks its paths.
-    paths["app/assets"] << "app/assets/stylesheets"
-
     # Add gem's JS to Propshaft's load path so Stimulus controllers can be served.
+    # CSS (app/assets/lean_cms/) is discovered automatically via app/assets registration.
     initializer "lean_cms.assets" do |app|
       app.config.assets.paths << root.join("app/javascript")
     end
