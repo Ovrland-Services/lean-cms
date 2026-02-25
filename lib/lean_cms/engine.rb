@@ -45,6 +45,21 @@ module LeanCms
       end
     end
 
+    # Ensure host app always has a resolvable edit-controls stylesheet path.
+    # This avoids Propshaft engine path edge cases by writing the file directly
+    # into app/assets/lean_cms/ when missing.
+    initializer "lean_cms.edit_controls_css" do |app|
+      host_css = app.root.join("app/assets/lean_cms/cms_edit_controls.css")
+      next if host_css.exist?
+
+      require "fileutils"
+      source_css = root.join("app/assets/lean_cms/cms_edit_controls.css")
+      next unless source_css.exist?
+
+      FileUtils.mkdir_p(host_css.dirname)
+      File.write(host_css, source_css.read)
+    end
+
     # Load rake tasks
     rake_tasks do
       load LeanCms::Engine.root.join("lib/tasks/lean_cms.rake")
