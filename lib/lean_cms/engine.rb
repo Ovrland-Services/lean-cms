@@ -9,11 +9,14 @@ module LeanCms
       g.factory_bot dir: "spec/factories"
     end
 
-    # Add gem's assets to Propshaft's load path so JS and CSS files can be served.
-    # Propshaft does not auto-discover engine asset subdirectories the way Sprockets did.
+    # Register asset subdirectories via Rails' path system so Propshaft discovers them
+    # before it builds its Assembly. Using paths[] here (evaluated at class load time)
+    # is more reliable than an initializer which may run after Propshaft locks its paths.
+    paths["app/assets"] << "app/assets/stylesheets"
+
+    # Add gem's JS to Propshaft's load path so Stimulus controllers can be served.
     initializer "lean_cms.assets" do |app|
       app.config.assets.paths << root.join("app/javascript")
-      app.config.assets.paths << root.join("app/assets/stylesheets")
     end
 
     # Register the gem's Stimulus controllers with the host app's importmap
