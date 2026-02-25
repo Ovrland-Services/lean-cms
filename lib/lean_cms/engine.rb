@@ -30,6 +30,20 @@ module LeanCms
       end
     end
 
+    # Auto-generate the lean_cms.css Tailwind entry point in the host app on boot.
+    # In production this file is created by the Dockerfile before asset precompile;
+    # in development we create it here so `bin/dev` works without any manual step.
+    initializer "lean_cms.tailwind_css" do |app|
+      tailwind_dir = app.root.join("app/assets/builds/tailwind")
+      lean_cms_css = tailwind_dir.join("lean_cms.css")
+      unless lean_cms_css.exist?
+        require "fileutils"
+        FileUtils.mkdir_p(tailwind_dir)
+        engine_css = root.join("app/assets/tailwind/lean_cms/engine.css")
+        File.write(lean_cms_css, "@import \"#{engine_css}\";\n")
+      end
+    end
+
     # Load rake tasks
     rake_tasks do
       load LeanCms::Engine.root.join("lib/tasks/lean_cms.rake")
