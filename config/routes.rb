@@ -1,5 +1,21 @@
 Rails.application.routes.draw do
   namespace :lean_cms, path: 'lean-cms' do
+    # Authentication
+    get    'login',   to: 'sessions#new',     as: :new_session
+    post   'login',   to: 'sessions#create',  as: :session
+    delete 'login',   to: 'sessions#destroy'
+
+    # Password reset (email-driven, sets a signed token on the user)
+    get   'reset-password',              to: 'passwords#new',    as: :new_password
+    post  'reset-password',              to: 'passwords#create', as: :passwords
+    get   'reset-password/:token/edit',  to: 'passwords#edit',   as: :edit_password
+    patch 'reset-password/:token',       to: 'passwords#update', as: :password
+    put   'reset-password/:token',       to: 'passwords#update'
+
+    # Magic-link password setup (new user invitations + admin-triggered resets)
+    get   'setup-password/:token', to: 'password_setup#show',   as: :password_setup
+    patch 'setup-password/:token', to: 'password_setup#update'
+
     root to: 'dashboard#index'
 
     # User Management
