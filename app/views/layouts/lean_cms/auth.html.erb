@@ -12,49 +12,186 @@
   <link rel="icon" type="image/png" sizes="64x64" href="<%= asset_path("lean_cms/sloth-favicon-64.png") %>">
   <link rel="apple-touch-icon" href="<%= asset_path("lean_cms/sloth-favicon-64.png") %>">
 
-  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    /* Lean CMS auth pages — self-contained styling, no host CSS framework
+       required. The admin (post-login) layout assumes Tailwind. */
+
     :root {
-      --cms-primary: <%= LeanCms.primary_color %>;
-      --cms-secondary: <%= LeanCms.secondary_color %>;
+      --lc-primary:   <%= LeanCms.primary_color %>;
+      --lc-secondary: <%= LeanCms.secondary_color %>;
+      --lc-ink:       #0f172a;
+      --lc-ink-soft:  #334155;
+      --lc-muted:     #64748b;
+      --lc-bg:        #f8fafc;
+      --lc-surface:   #ffffff;
+      --lc-border:    #e2e8f0;
+      --lc-red-bg:    #fef2f2;
+      --lc-red-fg:    #b91c1c;
+      --lc-grn-bg:    #f0fdf4;
+      --lc-grn-fg:    #15803d;
     }
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-    .lc-btn-primary { background-color: var(--cms-primary); }
-    .lc-btn-primary:hover { filter: brightness(0.92); }
-    .lc-link-primary { color: var(--cms-primary); }
-    .lc-link-primary:hover { filter: brightness(0.85); }
-    .lc-focus:focus { border-color: var(--cms-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cms-primary) 20%, transparent); }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--lc-bg);
+      color: var(--lc-ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .lc-auth-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+
+    .lc-auth-shell {
+      width: 100%;
+      max-width: 28rem;
+    }
+
+    .lc-auth-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .lc-auth-logo img { height: 3rem; width: auto; }
+
+    .lc-auth-card {
+      background: var(--lc-surface);
+      border: 1px solid var(--lc-border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+    }
+
+    .lc-auth-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--lc-ink);
+      margin: 0 0 0.5rem 0;
+    }
+    .lc-auth-lede {
+      font-size: 0.9375rem;
+      color: var(--lc-ink-soft);
+      margin: 0 0 1.5rem 0;
+    }
+
+    .lc-auth-flash {
+      padding: 0.625rem 0.875rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+    }
+    .lc-auth-flash--alert  { background: var(--lc-red-bg); color: var(--lc-red-fg); }
+    .lc-auth-flash--notice { background: var(--lc-grn-bg); color: var(--lc-grn-fg); }
+
+    .lc-auth-form { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .lc-auth-field { display: flex; flex-direction: column; gap: 0.5rem; }
+    .lc-auth-field label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--lc-ink-soft);
+    }
+    .lc-auth-input {
+      width: 100%;
+      padding: 0.75rem 0.875rem;
+      border: 2px solid var(--lc-border);
+      border-radius: 9px;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      color: var(--lc-ink);
+      background: var(--lc-surface);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .lc-auth-input::placeholder { color: var(--lc-muted); }
+    .lc-auth-input:focus {
+      border-color: var(--lc-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--lc-primary) 20%, transparent);
+    }
+
+    .lc-auth-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 9px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      background: var(--lc-primary);
+      color: white;
+      transition: filter 0.15s ease, transform 0.05s ease;
+    }
+    .lc-auth-btn:hover { filter: brightness(0.92); }
+    .lc-auth-btn:active { transform: translateY(1px); }
+    .lc-auth-btn--block { width: 100%; }
+
+    .lc-auth-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    @media (max-width: 420px) {
+      .lc-auth-actions { flex-direction: column; align-items: stretch; }
+      .lc-auth-actions .lc-auth-link { text-align: center; }
+    }
+
+    .lc-auth-link {
+      color: var(--lc-primary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .lc-auth-link:hover { filter: brightness(0.85); text-decoration: underline; }
+
+    .lc-auth-meta {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--lc-muted);
+      margin-top: 1.5rem;
+    }
   </style>
 </head>
-<body class="min-h-screen bg-gray-50 antialiased flex flex-col">
-  <main class="flex-1 flex items-center justify-center px-4 py-12">
-    <div class="w-full max-w-md">
+<body>
+  <main class="lc-auth-main">
+    <div class="lc-auth-shell">
       <% if LeanCms.site_logo_path.present? %>
-        <div class="mb-8 flex justify-center">
-          <%= image_tag LeanCms.site_logo_path, alt: LeanCms.site_name, class: "h-12 w-auto" %>
+        <div class="lc-auth-logo">
+          <%= image_tag LeanCms.site_logo_path, alt: LeanCms.site_name %>
         </div>
       <% end %>
 
-      <div class="bg-white shadow-lg rounded-2xl border border-gray-100 p-8">
+      <div class="lc-auth-card">
         <% if alert = flash[:alert] %>
-          <p class="py-2 px-3 bg-red-50 mb-5 text-red-600 font-medium rounded-lg text-sm" role="alert"><%= alert %></p>
+          <p class="lc-auth-flash lc-auth-flash--alert" role="alert"><%= alert %></p>
         <% end %>
-
         <% if notice = flash[:notice] %>
-          <p class="py-2 px-3 bg-green-50 mb-5 text-green-700 font-medium rounded-lg text-sm" role="status"><%= notice %></p>
+          <p class="lc-auth-flash lc-auth-flash--notice" role="status"><%= notice %></p>
         <% end %>
 
         <%= yield %>
       </div>
 
-      <p class="text-center text-xs text-gray-500 mt-6">
-        <%= LeanCms.site_name %>
-      </p>
+      <p class="lc-auth-meta"><%= LeanCms.site_name %></p>
     </div>
   </main>
 </body>
