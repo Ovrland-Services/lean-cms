@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.7"
+          bundler-cache: true
+
+      - name: gem build smoke test
+        run: |
+          gem build lean_cms.gemspec
+          ls -lh lean_cms-*.gem
+
+      - name: bundler-audit
+        run: |
+          gem install bundler-audit
+          bundle-audit check --update
+
+  rspec:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.7"
+          bundler-cache: true
+
+      - name: Check for specs
+        id: specs
+        run: |
+          if [ -d spec ] && [ "$(find spec -name '*_spec.rb' | head -1)" ]; then
+            echo "has_specs=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_specs=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No specs yet — skipping RSpec. Add files under spec/ to enable this job."
+          fi
+
+      - name: Run RSpec
+        if: steps.specs.outputs.has_specs == 'true'
+        run: bundle exec rspec
