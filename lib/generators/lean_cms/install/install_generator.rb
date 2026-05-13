@@ -10,12 +10,47 @@ module LeanCms
 
       desc "Installs Lean CMS into the host Rails application"
 
+      class_option :user_class, type: :string, default: "User",
+        desc: "Name of the user model class (default: User). " \
+              "Use --user=Admin or similar if your auth gem (Devise, etc.) uses a different name."
+
       def self.next_migration_number(dirname)
         next_migration_number = current_migration_number(dirname) + 1
         ActiveRecord::Migration.next_migration_number(next_migration_number)
       end
 
+      # Stop before any side effects if the host doesn't have a user model
+      # with a matching table yet. The Lean CMS migrations have foreign keys
+      # pointing at this table (default `:users`); without it, db:migrate
+      # blows up partway through and leaves the database in a half-set-up state.
+      def check_user_model
+        user_class = options[:user_class]
+        table_name = user_class.tableize
+
+        return if ActiveRecord::Base.connection.table_exists?(table_name)
+
+        say "\n#{"=" * 64}", :red
+        say "Lean CMS install can't continue.", :red
+        say "=" * 64, :red
+        say ""
+        say "No `#{table_name}` table found in your database."
+        say ""
+        say "Lean CMS expects an existing #{user_class} model. Set one up first:"
+        say ""
+        say "  - Rails 8 built-in auth:  bin/rails generate authentication"
+        say "  - Devise / Clearance / etc.: install per that gem's instructions"
+        say "  - Custom model:  bin/rails generate model #{user_class} ...", :yellow
+        say ""
+        say "Then run  bin/rails db:migrate  and re-run this generator."
+        say ""
+        say "If your user model isn't named #{user_class}, pass --user=ClassName:"
+        say "  bin/rails generate lean_cms:install --user=Admin"
+        say ""
+        exit 1
+      end
+
       def copy_initializer
+        @user_class = options[:user_class]
         template "lean_cms.rb", "config/initializers/lean_cms.rb"
       end
 
