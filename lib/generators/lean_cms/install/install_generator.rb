@@ -201,8 +201,12 @@ module LeanCms
         say "3. Include Lean CMS in ApplicationController", :yellow
         say "   class ApplicationController < ActionController::Base"
         say "     include LeanCms::Authentication"
-        say "     include Pundit::Authorization"
         say "   end"
+        say ""
+        say "   (Pundit is included automatically by the gem's admin controllers."
+        say "   Add `include Pundit::Authorization` to your own ApplicationController"
+        say "   only if you want `authorize` / `policy_scope` available in your"
+        say "   non-CMS controllers too.)"
         say ""
         say "4. Include the helper in ApplicationHelper", :yellow
         say "   module ApplicationHelper"

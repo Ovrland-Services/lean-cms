@@ -1,5 +1,12 @@
 module LeanCms
   class ApplicationController < ::ApplicationController
+    # Pundit is included here so the gem's admin controllers (UsersController
+    # most prominently) can call `authorize` / `policy_scope` without
+    # requiring the host's ApplicationController to include it. Hosts that
+    # want Pundit available in their own non-CMS controllers should still
+    # `include Pundit::Authorization` in their own ApplicationController.
+    include Pundit::Authorization
+
     include LeanCms::Authorization
 
     layout 'lean_cms/application'
