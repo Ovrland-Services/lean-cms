@@ -2,6 +2,7 @@ class LeanCms::Setting < ApplicationRecord
   self.table_name = 'lean_cms_settings'
 
   has_paper_trail
+  has_one_attached :file
 
   validates :key, presence: true, uniqueness: true
 
@@ -16,11 +17,33 @@ class LeanCms::Setting < ApplicationRecord
     def set(key, value)
       setting = find_or_initialize_by(key: key)
       setting.value = value.to_s
-      PaperTrail.request(whodunnit: Current.user&.id&.to_s) do
+      PaperTrail.request(whodunnit: LeanCms::Current.user&.id&.to_s) do
         setting.save!
       end
       Rails.cache.delete("lean_cms_setting/#{key}")
       value
+    end
+
+    # Returns the ActiveStorage URL for the uploaded favicon (host-configured
+    # override), or nil if no favicon has been uploaded. Callers should fall
+    # back to the gem's default sloth favicon when this returns nil.
+    def site_favicon_url
+      setting = find_by(key: "site_favicon")
+      return nil unless setting&.file&.attached?
+      Rails.application.routes.url_helpers.rails_blob_path(setting.file, only_path: true)
+    end
+
+    # Attaches a new favicon file (e.g. from params[:site_favicon]).
+    def update_site_favicon!(file_param)
+      return if file_param.blank?
+      setting = find_or_create_by!(key: "site_favicon") { |s| s.value = "uploaded" }
+      setting.file.purge if setting.file.attached?
+      setting.file.attach(file_param)
+    end
+
+    def remove_site_favicon!
+      setting = find_by(key: "site_favicon")
+      setting&.file&.purge if setting&.file&.attached?
     end
 
     # Bypass cache - use for settings that must take effect immediately (e.g. cookie consent)

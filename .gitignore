@@ -11,3 +11,7 @@
 /tmp/
 
 Gemfile.lock
+
+# macOS
+.DS_Store
+**/.DS_Store
