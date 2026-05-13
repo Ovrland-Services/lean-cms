@@ -67,6 +67,55 @@ module LeanCms
         exit 1
       end
 
+      # Detect Rails 8's built-in auth (`bin/rails generate authentication`)
+      # and warn — it conflicts with Lean CMS's Authentication concern.
+      # Both define `before_action :require_authentication`, and the
+      # last-included wins. Without manual cleanup, /lean-cms protected
+      # routes redirect to /session/new (Rails 8's) instead of /lean-cms/login.
+      def check_for_rails_auth_conflict
+        ac_path = File.join(destination_root, "app", "controllers", "application_controller.rb")
+        return unless File.exist?(ac_path)
+        return unless File.read(ac_path).match?(/^\s*include\s+Authentication\s*$/)
+
+        say "\n#{"=" * 64}", :yellow
+        say "WARNING: Rails 8 authentication detected.", :yellow
+        say "=" * 64, :yellow
+        say ""
+        say "app/controllers/application_controller.rb already includes Rails 8's"
+        say "built-in Authentication concern. That conflicts with Lean CMS auth:"
+        say "both define `before_action :require_authentication`, and the"
+        say "last-included one wins. As-is, /lean-cms admin routes will redirect"
+        say "to /session/new (Rails 8's login) instead of /lean-cms/login."
+        say ""
+        say "After this install completes, clean up Rails 8 auth so Lean CMS owns auth:"
+        say ""
+        say "  1. In app/controllers/application_controller.rb:"
+        say "       Remove:  include Authentication", :red
+        say "       Keep:    include LeanCms::Authentication", :green
+        say ""
+        say "  2. Delete the Rails-8-generated auth files (Lean CMS replaces them):"
+        say "       app/controllers/sessions_controller.rb", :cyan
+        say "       app/controllers/passwords_controller.rb", :cyan
+        say "       app/controllers/concerns/authentication.rb", :cyan
+        say "       app/models/session.rb", :cyan
+        say "       app/models/current.rb", :cyan
+        say "       app/views/sessions/", :cyan
+        say "       app/views/passwords/", :cyan
+        say "       app/views/passwords_mailer/", :cyan
+        say "       app/mailers/passwords_mailer.rb", :cyan
+        say "       test/controllers/sessions_controller_test.rb", :cyan
+        say "       test/controllers/passwords_controller_test.rb", :cyan
+        say ""
+        say "  3. Remove the Rails 8 auth routes from config/routes.rb:"
+        say "       resource :session", :red
+        say "       resources :passwords, param: :token", :red
+        say ""
+        say "Lean CMS provides all of this functionality under /lean-cms/."
+        say "Continuing the install — you'll see this WARNING again at the end."
+        say "#{"=" * 64}", :yellow
+        say ""
+      end
+
       # Generate a migration that adds the Lean CMS-specific columns the host
       # user table doesn't already have (name, active, permission flags, …).
       # Silently skips if everything's already in place. The migration runs
