@@ -13,7 +13,6 @@ module LeanCms
 
       def copy_views
         directory "views/pages", "app/views/pages"
-        directory "views/shared", "app/views/shared"
       end
 
       def copy_structure_yaml
