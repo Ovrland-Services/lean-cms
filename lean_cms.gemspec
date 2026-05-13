@@ -34,16 +34,16 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Rails engine
-  spec.add_dependency "rails", ">= 8.0"
+  spec.add_dependency "rails", "~> 8.0"
 
   # Core CMS dependencies
-  spec.add_dependency "paper_trail"              # version tracking / undo
-  spec.add_dependency "view_component"           # component-based views
-  spec.add_dependency "kaminari"                 # pagination
-  spec.add_dependency "pundit"                   # authorization policies
-  spec.add_dependency "noticed", "~> 2.0"        # in-app + email/SMS notifications
-  spec.add_dependency "image_processing", "~> 1.2" # ActiveStorage variants
-  spec.add_dependency "meta-tags"                # SEO meta tag helpers
-  spec.add_dependency "rack-attack"              # rate limiting
-  spec.add_dependency "http"                     # HTTP client for notification delivery
+  spec.add_dependency "paper_trail",     "~> 17.0"  # version tracking / undo
+  spec.add_dependency "view_component",  "~> 4.0"   # component-based views
+  spec.add_dependency "kaminari",        "~> 1.2"   # pagination
+  spec.add_dependency "pundit",          "~> 2.5"   # authorization policies
+  spec.add_dependency "noticed",         "~> 2.0"   # in-app + email/SMS notifications
+  spec.add_dependency "image_processing", "~> 1.2"  # ActiveStorage variants
+  spec.add_dependency "meta-tags",       "~> 2.20"  # SEO meta tag helpers
+  spec.add_dependency "rack-attack",     "~> 6.7"   # rate limiting
+  spec.add_dependency "http",            "~> 5.0"   # HTTP client for notification delivery
 end
