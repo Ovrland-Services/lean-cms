@@ -1,4 +1,8 @@
 class PagesController < ApplicationController
+  # LeanCms::Authentication protects every controller by default. Opt the
+  # public-facing demo pages out so non-admins can actually see them.
+  allow_unauthenticated_access
+
   def home
     @page = LeanCms::Page.find_by(slug: 'home')
   end
