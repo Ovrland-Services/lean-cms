@@ -25,4 +25,14 @@ class LeanCmsEngineTest < ActiveSupport::TestCase
     assert_equal "/lean-cms", LeanCms.admin_path
     assert_equal 10,         LeanCms.posts_per_page
   end
+
+  # The engine_name controls which directory tailwindcss-rails' built-in
+  # engine discovery (Tailwindcss::Engines.bundle) looks under for our
+  # Tailwind sources: app/assets/tailwind/<engine_name>/engine.css.
+  # Rails' default derivation would give us "lean_cms_engine", which would
+  # break Tailwind utility emission for gem views.
+  test "engine_name is 'lean_cms' so tailwindcss-rails picks up our engine.css" do
+    assert_equal "lean_cms", LeanCms::Engine.engine_name
+    assert_predicate LeanCms::Engine.root.join("app/assets/tailwind/lean_cms/engine.css"), :exist?
+  end
 end

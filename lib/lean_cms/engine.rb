@@ -3,6 +3,12 @@ module LeanCms
     # Note: isolate_namespace is intentionally omitted so that all lean_cms_* route
     # helpers remain accessible in both the engine and host app without renaming views.
 
+    # Override Rails' default engine_name derivation ("lean_cms_engine") so that
+    # tailwindcss-rails' built-in engine discovery
+    # (Tailwindcss::Engines.bundle, run before every tailwindcss:build) finds
+    # our Tailwind sources at app/assets/tailwind/lean_cms/engine.css.
+    engine_name "lean_cms"
+
     config.generators do |g|
       g.test_framework :rspec
       g.fixture_replacement :factory_bot
@@ -33,31 +39,14 @@ module LeanCms
       end
     end
 
-    # Auto-generate the lean_cms.css Tailwind entry point in the host app on boot.
-    # In production this file is created by the Dockerfile before asset precompile;
-    # in development we create it here so `bin/dev` works without any manual step.
-    initializer "lean_cms.tailwind_css" do |app|
-      # Only generate the Tailwind v4 entry-point file if the host actually
-      # has tailwindcss-rails installed. Without Tailwind, the @import line
-      # was being served raw to the browser, producing a request for the
-      # gem's absolute filesystem path (RoutingError 404).
-      next unless defined?(Tailwindcss::Engine)
-      next if app.root.to_s == root.to_s
-
-      tailwind_dir = app.root.join("app/assets/builds/tailwind")
-      lean_cms_css = tailwind_dir.join("lean_cms.css")
-      next if lean_cms_css.exist?
-
-      engine_css = root.join("app/assets/tailwind/lean_cms/engine.css")
-      next unless engine_css.exist?
-
-      require "fileutils"
-      FileUtils.mkdir_p(tailwind_dir)
-      # Inline the contents rather than @import-ing the absolute filesystem
-      # path — that path is meaningful to the Tailwind CLI during compile,
-      # but on serve it leaks as a request for /Users/.../engine.css.
-      File.write(lean_cms_css, engine_css.read)
-    end
+    # NOTE: We deliberately do NOT generate app/assets/builds/tailwind/lean_cms.css
+    # ourselves. That's tailwindcss-rails' job: Tailwindcss::Engines.bundle (run as
+    # the `tailwindcss:engines` task, which is a prereq of every `tailwindcss:build`
+    # and `tailwindcss:watch`) walks Rails::Engine.subclasses, finds ours by
+    # engine_name "lean_cms" (set above), and writes the bundle file containing
+    # @import "<gem>/app/assets/tailwind/lean_cms/engine.css". Hosts then pull
+    # this in from their own app/assets/tailwind/application.css — see the
+    # install generator's `wire_tailwind` step.
 
     # Ensure host app always has a resolvable edit-controls stylesheet path.
     # Place it under app/assets/stylesheets so stylesheet logical path resolution
