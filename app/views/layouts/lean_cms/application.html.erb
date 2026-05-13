@@ -7,6 +7,11 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
 
+  <link rel="icon" type="image/png" sizes="16x16" href="<%= asset_path("lean_cms/sloth-favicon-16.png") %>">
+  <link rel="icon" type="image/png" sizes="32x32" href="<%= asset_path("lean_cms/sloth-favicon-32.png") %>">
+  <link rel="icon" type="image/png" sizes="64x64" href="<%= asset_path("lean_cms/sloth-favicon-64.png") %>">
+  <link rel="apple-touch-icon" href="<%= asset_path("lean_cms/sloth-favicon-64.png") %>">
+
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "actiontext", "data-turbo-track": "reload" %>
