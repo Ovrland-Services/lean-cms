@@ -30,7 +30,7 @@ module LeanCms
     end
 
     def self.create_for_password_reset(user, created_by_ip: nil)
-      user.magic_links.for_purpose("password_reset").valid.update_all(used_at: Time.current)
+      where(user: user).for_purpose("password_reset").valid.update_all(used_at: Time.current)
 
       create!(
         user: user,
