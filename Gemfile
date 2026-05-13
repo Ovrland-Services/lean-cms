@@ -5,7 +5,7 @@ gemspec
 group :development, :test do
   gem "rails", "~> 8.1"
   gem "sqlite3", ">= 2.1"
-  gem "rspec-rails"
+  gem "bcrypt", "~> 3.1"
   gem "factory_bot_rails"
   gem "debug"
 end

@@ -28,7 +28,7 @@ jobs:
           gem install bundler-audit
           bundle-audit check --update
 
-  rspec:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,16 +40,5 @@ jobs:
           ruby-version: "3.4.7"
           bundler-cache: true
 
-      - name: Check for specs
-        id: specs
-        run: |
-          if [ -d spec ] && [ "$(find spec -name '*_spec.rb' | head -1)" ]; then
-            echo "has_specs=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_specs=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No specs yet — skipping RSpec. Add files under spec/ to enable this job."
-          fi
-
-      - name: Run RSpec
-        if: steps.specs.outputs.has_specs == 'true'
-        run: bundle exec rspec
+      - name: Run Minitest
+        run: bundle exec rake test
