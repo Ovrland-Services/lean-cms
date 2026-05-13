@@ -38,7 +38,7 @@ module LeanCms
 
       if @user.save
         @magic_link.mark_as_used!(request.remote_ip)
-        @user.sessions.destroy_all
+        LeanCms::Session.where(user: @user).destroy_all
         redirect_to lean_cms_new_session_path, notice: "Password set successfully. Please log in."
       else
         flash.now[:alert] = @user.errors.full_messages.join(", ")

@@ -24,7 +24,7 @@ module LeanCms
 
     def update
       if @user.update(params.permit(:password, :password_confirmation))
-        @user.sessions.destroy_all
+        LeanCms::Session.where(user: @user).destroy_all
         redirect_to lean_cms_new_session_path, notice: "Password has been reset."
       else
         redirect_to lean_cms_edit_password_path(params[:token]), alert: "Passwords did not match."
