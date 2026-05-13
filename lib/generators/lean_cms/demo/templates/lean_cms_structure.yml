@@ -14,7 +14,7 @@ pages:
           subheading:
             label: "Sub-headline"
             type: text
-            default: "LeanCMS gives Rails developers in-context editing without the bloat."
+            default: "Lean CMS gives Rails developers in-context editing without the bloat."
           body:
             label: "Body Text"
             type: rich_text
@@ -34,7 +34,7 @@ pages:
           heading:
             label: "Section Heading"
             type: text
-            default: "Why Developers Love LeanCMS"
+            default: "Why Developers Love Lean CMS"
         cards:
           max_cards: 6
           type: feature
@@ -63,11 +63,11 @@ pages:
           heading:
             label: "Page Heading"
             type: text
-            default: "About LeanCMS"
+            default: "About Lean CMS"
           body:
             label: "Body"
             type: rich_text
-            default: "<p>LeanCMS is a Rails Engine built for developers who want a fast, maintainable CMS without an external SaaS dependency.</p>"
+            default: "<p>Lean CMS is a Rails Engine built for developers who want a fast, maintainable CMS without an external SaaS dependency.</p>"
           photo:
             label: "Team Photo"
             type: image

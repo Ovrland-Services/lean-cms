@@ -4,7 +4,7 @@ require "lean_cms/engine"
 require "lean_cms/sync_helper"
 
 module LeanCms
-  # Table name prefix for all LeanCMS models
+  # Table name prefix for all Lean CMS models
   def self.table_name_prefix
     "lean_cms_"
   end

@@ -5,7 +5,7 @@ module LeanCms
     class DemoGenerator < Rails::Generators::Base
       source_root File.expand_path("templates", __dir__)
 
-      desc "Installs LeanCMS demo pages: Home, About, and Contact with all 9 content types"
+      desc "Installs Lean CMS demo pages: Home, About, and Contact with all 9 content types"
 
       def copy_pages_controller
         template "pages_controller.rb", "app/controllers/pages_controller.rb"
@@ -39,7 +39,7 @@ module LeanCms
 
       def print_instructions
         say "\n#{"=" * 60}", :green
-        say "LeanCMS demo pages installed!", :green
+        say "Lean CMS demo pages installed!", :green
         say "=" * 60, :green
         say ""
         say "Demo pages:"
