@@ -8,8 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Authentication owned by the gem.** Login, password reset, and magic-link password setup now live under `/lean-cms/login`, `/lean-cms/reset-password`, and `/lean-cms/setup-password/:token`. New gem-owned pieces:
+  - `LeanCms::Authentication` controller concern — host's `ApplicationController` includes this to expose `current_user`, `authenticated?`, `start_new_session_for`, and `terminate_session`.
+  - `LeanCms::Current` (replaces host `Current`) — `ActiveSupport::CurrentAttributes` with `session` and delegated `user`.
+  - `LeanCms::Session` (table `lean_cms_sessions`) and `LeanCms::MagicLink` (table `lean_cms_magic_links`).
+  - `LeanCms::SessionsController`, `PasswordsController`, `PasswordSetupController` with branded views rendered via the new `lean_cms/auth` layout.
+  - `LeanCms::PasswordsMailer` (`reset`) and `LeanCms::UsersMailer` (`invitation`, `reactivation`, `admin_triggered_password_reset`).
+  - Migration `CreateLeanCmsAuthTables` — idempotent (skips if tables already exist).
+- `LeanCms.mailer_from` config — `From:` address for gem-sent emails (default: `noreply@example.com`).
 - `lean_cms:optimize_images` rake task — reads originals from `app/assets/images/source/` and emits resized WebP + same-format fallback variants (default widths: 640/1280/1920) into `app/assets/images/`. Overridable via `WIDTHS`, `WEBP_QUALITY`, `JPEG_QUALITY` env vars. Idempotent (skips outputs newer than source). Powered by libvips via `image_processing`.
 - `lean_cms_picture_tag(name, alt:, widths:, format:, sizes:, **img_options)` helper — renders a `<picture>` with a WebP `<source>` and a JPG/PNG fallback `<img>`, both with proper `srcset` for the configured widths. Defaults to lazy loading and async decoding. Use for static layout images optimized via `lean_cms:optimize_images`.
+
+### Changed
+- **BREAKING:** `LeanCms::Authorization` references `LeanCms::Current.user` (was `Current.user`). Hosts that previously relied on a top-level `Current` constant must either include the gem's auth (and remove their own `Current`) or alias `Current = LeanCms::Current`.
+- **BREAKING:** auth URL helpers are namespaced: `lean_cms_new_session_path` (was `new_session_path`), `lean_cms_new_password_path`, `lean_cms_password_setup_path`, etc.
+
+### Host migration notes
+Hosts moving from in-app auth to gem auth should:
+1. `bundle update lean_cms`, then `bin/rails db:migrate` to create `lean_cms_sessions` and `lean_cms_magic_links`.
+2. Add `include LeanCms::Authentication` to `ApplicationController` (replacing any local `Authentication` concern).
+3. Update User: `has_many :sessions, class_name: "LeanCms::Session", dependent: :destroy` and the same for `:magic_links`.
+4. Delete local `SessionsController`, `PasswordsController`, `PasswordSetupController`, `Session`, `Current`, `MagicLink`, `PasswordsMailer`, `UsersMailer`, related views, and remove their routes.
+5. Update any references to the unprefixed URL helpers to the `lean_cms_*` namespaced versions.
+6. Optionally drop the old `sessions` and `magic_links` tables in a follow-up migration.
 - `app/assets/tailwind/lean_cms/engine.css` — hooks into `tailwindcss-rails` v4 engine support so the gem's views and Stimulus controllers are scanned when compiling Tailwind CSS in the host app, fixing missing utility classes in production
 - Content Sync card in Settings page showing live lock status with lock/unlock buttons and reason field
 - Lock status banner in the CMS admin layout — displayed prominently across all pages when content is locked, with an inline Unlock button
