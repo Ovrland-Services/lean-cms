@@ -16,8 +16,13 @@ class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
 
     # Posts
     create_table :lean_cms_posts, if_not_exists: true do |t|
-      t.references :author,         null: false, foreign_key: { to_table: :users }
-      t.references :last_edited_by,             foreign_key: { to_table: :users }
+      # author / last_edited_by reference the host's user table. We intentionally
+      # don't add a database-level FK here — the host owns its user table
+      # (default `users`, but configurable via LeanCms.user_class) and SQLite's
+      # FK validation on later table rebuilds breaks if the host's users table
+      # name doesn't match. Belongs-to in the model gives us app-level integrity.
+      t.references :author,         null: false
+      t.references :last_edited_by
       t.string  :title,            null: false
       t.string  :slug,             null: false
       t.text    :excerpt
@@ -33,7 +38,7 @@ class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
 
     # Page Contents
     create_table :lean_cms_page_contents, if_not_exists: true do |t|
-      t.references :last_edited_by, null: false, foreign_key: { to_table: :users }
+      t.references :last_edited_by, null: false
       t.integer :page_id
       # FK constraint added at the bottom of this migration after both tables
       # exist, so we can use add_foreign_key with an explicit column.
