@@ -8,7 +8,12 @@
 /spec/examples.txt
 /test/tmp/
 /test/version_tmp/
+/test/dummy/log/
+/test/dummy/tmp/
+/test/dummy/storage/
+/test/dummy/app/assets/
 /tmp/
+/log/
 
 Gemfile.lock
 
