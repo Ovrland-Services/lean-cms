@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] — 2026-05-13
+
+The v0.2.1 Tailwind fix was incomplete — it stopped the RoutingError but didn't actually plug the gem's CSS into Tailwind's compile pipeline, so utilities for gem views weren't being emitted. This release adopts `tailwindcss-rails`' native engine support instead.
+
+### Fixed
+- **Engine name aligned with our Tailwind directory.** Set `engine_name "lean_cms"` explicitly. Rails' default derivation for `LeanCms::Engine` was `lean_cms_engine`, so `Tailwindcss::Engines.bundle` (the built-in `tailwindcss-rails` engine walker) was looking for `app/assets/tailwind/lean_cms_engine/engine.css` — never matched our `app/assets/tailwind/lean_cms/engine.css`. Now `tailwindcss-rails` finds and bundles us natively. Safe to change because we don't use `isolate_namespace` (no route helper prefixing).
+- **Removed our `lean_cms.tailwind_css` initializer entirely.** It was duplicating `Tailwindcss::Engines.bundle` (which `tailwindcss-rails 4.x` runs as a prereq of every `tailwindcss:build` and `tailwindcss:watch`) — except buggily. The v0.2.1 attempt to fix it by inlining engine.css contents broke the relative `@source` paths. Letting tailwindcss-rails do its own thing is correct.
+
+### Added
+- **Install generator now wires up Tailwind.** New `wire_tailwind` step appends `@import "../builds/tailwind/lean_cms.css";` to the host's `app/assets/tailwind/application.css` so Tailwind actually scans the gem's views during compile. If no Tailwind input file is found, prints the line the user needs to paste themselves.
+
 ## [0.2.1] — 2026-05-13
 
 Polish pass on the install + demo flow surfaced by an end-to-end test drive of v0.2.0 on a fresh Rails 8 app. No public API changes.
@@ -107,7 +118,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Ovrland-Services/lean-cms/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Ovrland-Services/lean-cms/releases/tag/v0.1.0
