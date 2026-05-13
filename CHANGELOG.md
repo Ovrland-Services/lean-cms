@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-05-13
+
 ### Added
 - **Sloth mascot assets** under `app/assets/images/lean_cms/` — favicons (16/32/64), full logo, and 404/500 error illustrations. The gem's admin layouts (`lean_cms/application` and `lean_cms/auth`) now wire in the sloth favicon by default.
 - `LeanCms::Setting.site_favicon_url` — returns the ActiveStorage URL of an uploaded favicon override, or `nil` if none is set. Host apps use this with a fallback to the gem's sloth PNGs for the public site's `<link rel="icon">`.
@@ -78,5 +80,6 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/OvrlandServices/lean-cms/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/OvrlandServices/lean-cms/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Ovrland-Services/lean-cms/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/Ovrland-Services/lean-cms/releases/tag/v0.1.0
