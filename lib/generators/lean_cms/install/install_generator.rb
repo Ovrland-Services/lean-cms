@@ -24,9 +24,9 @@ module LeanCms
       end
 
       def create_structure_file
-        unless File.exist?(destination_root.join("config/lean_cms_structure.yml"))
-          template "lean_cms_structure.yml", "config/lean_cms_structure.yml"
-        end
+        target = File.join(destination_root, "config", "lean_cms_structure.yml")
+        return if File.exist?(target)
+        template "lean_cms_structure.yml", "config/lean_cms_structure.yml"
       end
 
       def print_instructions
