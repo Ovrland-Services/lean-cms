@@ -1,7 +1,7 @@
 class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
   def change
     # Pages (must come before page_contents for FK)
-    create_table :lean_cms_pages do |t|
+    create_table :lean_cms_pages, if_not_exists: true do |t|
       t.string  :slug,             null: false
       t.string  :parent_slug
       t.string  :title,            null: false
@@ -15,7 +15,7 @@ class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
     end
 
     # Posts
-    create_table :lean_cms_posts do |t|
+    create_table :lean_cms_posts, if_not_exists: true do |t|
       t.references :author,         null: false, foreign_key: { to_table: :users }
       t.references :last_edited_by,             foreign_key: { to_table: :users }
       t.string  :title,            null: false
@@ -32,9 +32,11 @@ class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
     end
 
     # Page Contents
-    create_table :lean_cms_page_contents do |t|
+    create_table :lean_cms_page_contents, if_not_exists: true do |t|
       t.references :last_edited_by, null: false, foreign_key: { to_table: :users }
-      t.integer :page_id,           foreign_key: { to_table: :lean_cms_pages }
+      t.integer :page_id
+      # FK constraint added at the bottom of this migration after both tables
+      # exist, so we can use add_foreign_key with an explicit column.
       t.string  :page,              null: false
       t.string  :section,           null: false
       t.string  :key,               null: false
@@ -57,7 +59,7 @@ class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
     end
 
     # Settings (key-value store)
-    create_table :lean_cms_settings do |t|
+    create_table :lean_cms_settings, if_not_exists: true do |t|
       t.string :key,   null: false
       t.text   :value
       t.timestamps
@@ -66,7 +68,7 @@ class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
     end
 
     # Notification Settings
-    create_table :lean_cms_notification_settings do |t|
+    create_table :lean_cms_notification_settings, if_not_exists: true do |t|
       t.string  :email_provider
       t.text    :sendgrid_api_key
       t.text    :mailgun_api_key
@@ -83,7 +85,7 @@ class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
     end
 
     # Meta Tags (polymorphic)
-    create_table :lean_cms_meta_tags do |t|
+    create_table :lean_cms_meta_tags, if_not_exists: true do |t|
       t.references :taggable, polymorphic: true, null: false
       t.string :title
       t.text   :description
@@ -96,7 +98,7 @@ class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
     end
 
     # Form Submissions
-    create_table :lean_cms_form_submissions do |t|
+    create_table :lean_cms_form_submissions, if_not_exists: true do |t|
       t.string  :form_type,       null: false
       t.string  :name
       t.string  :email
@@ -117,6 +119,8 @@ class CreateLeanCmsTables < ActiveRecord::Migration[8.1]
       t.index :created_at
     end
 
-    add_foreign_key :lean_cms_page_contents, :lean_cms_pages, column: :page_id
+    unless foreign_key_exists?(:lean_cms_page_contents, :lean_cms_pages, column: :page_id)
+      add_foreign_key :lean_cms_page_contents, :lean_cms_pages, column: :page_id
+    end
   end
 end
