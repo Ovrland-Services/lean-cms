@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Sloth mascot assets** under `app/assets/images/lean_cms/` — favicons (16/32/64), full logo, and 404/500 error illustrations. The gem's admin layouts (`lean_cms/application` and `lean_cms/auth`) now wire in the sloth favicon by default.
+- `LeanCms::Setting.site_favicon_url` — returns the ActiveStorage URL of an uploaded favicon override, or `nil` if none is set. Host apps use this with a fallback to the gem's sloth PNGs for the public site's `<link rel="icon">`.
+- `LeanCms::Setting.update_site_favicon!(io)` and `remove_site_favicon!` — programmatic helpers for the favicon attachment.
+- Favicon upload UI in the Settings page (`/lean-cms/settings`) — admins can upload a PNG/ICO/SVG to override the default sloth on the public site, or remove it to fall back to the default.
+- `has_one_attached :file` on `LeanCms::Setting` — supports per-setting file attachments (currently used only for `site_favicon`).
+
+### Fixed
+- `LeanCms::Setting.set` now references `LeanCms::Current.user` (was top-level `Current.user`, which would raise `NameError` after the auth-into-gem migration if any setting was saved from a controller).
+
+### Added (continued)
 - **Authentication owned by the gem.** Login, password reset, and magic-link password setup now live under `/lean-cms/login`, `/lean-cms/reset-password`, and `/lean-cms/setup-password/:token`. New gem-owned pieces:
   - `LeanCms::Authentication` controller concern — host's `ApplicationController` includes this to expose `current_user`, `authenticated?`, `start_new_session_for`, and `terminate_session`.
   - `LeanCms::Current` (replaces host `Current`) — `ActiveSupport::CurrentAttributes` with `session` and delegated `user`.
