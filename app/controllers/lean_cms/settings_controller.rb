@@ -30,6 +30,10 @@ module LeanCms
     end
 
     def update
+      # Site favicon (uploaded override for the public site)
+      LeanCms::Setting.remove_site_favicon! if params[:remove_site_favicon] == "1"
+      LeanCms::Setting.update_site_favicon!(params[:site_favicon]) if params[:site_favicon].present?
+
       # Update in-context editing setting
       LeanCms::Setting.set('in_context_editing', params[:in_context_editing] == '1' ? 'true' : 'false')
       
