@@ -17,8 +17,11 @@ namespace :lean_cms do
       exit 0
     end
 
-    # Find a system user for last_edited_by
-    system_user = User.cms_admin.first || User.first
+    # Find a system user for last_edited_by — prefer a super admin if one
+    # exists, fall back to any user. `cms_admin` was the old enum-based
+    # scope from pre-0.2 and is no longer defined on the host User model.
+    user_class = LeanCms.user_class.constantize
+    system_user = user_class.where(is_super_admin: true).first || user_class.first
     unless system_user
       puts "Error: No users found in database. Please create at least one user first."
       exit 1
