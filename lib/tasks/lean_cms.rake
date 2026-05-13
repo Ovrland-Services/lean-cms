@@ -457,7 +457,7 @@ namespace :lean_cms do
     jpeg_quality = (ENV["JPEG_QUALITY"] || "85").to_i
     written = skipped = 0
 
-    Dir.glob(source_dir.join("*.{jpg,jpeg,png,JPG,JPEG,PNG}")).sort.each do |source|
+    Dir.glob(source_dir.join("*.{jpg,jpeg,png}"), File::FNM_CASEFOLD).uniq.sort.each do |source|
       base       = File.basename(source, ".*")
       source_ext = File.extname(source).delete(".").downcase
       fallback   = source_ext == "jpeg" ? "jpg" : source_ext
