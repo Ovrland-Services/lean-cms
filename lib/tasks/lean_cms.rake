@@ -438,4 +438,52 @@ namespace :lean_cms do
       puts "=" * 60
     end
   end
+
+  desc "Optimize images: generate WebP + fallback variants from app/assets/images/source/"
+  task optimize_images: :environment do
+    require "image_processing/vips"
+
+    source_dir = Rails.root.join("app/assets/images/source")
+    output_dir = Rails.root.join("app/assets/images")
+
+    unless source_dir.directory?
+      puts "No source directory at #{source_dir}."
+      puts "Create app/assets/images/source/, place originals there, and re-run."
+      exit 0
+    end
+
+    widths       = (ENV["WIDTHS"]       || "640,1280,1920").split(",").map(&:to_i)
+    webp_quality = (ENV["WEBP_QUALITY"] || "80").to_i
+    jpeg_quality = (ENV["JPEG_QUALITY"] || "85").to_i
+    written = skipped = 0
+
+    Dir.glob(source_dir.join("*.{jpg,jpeg,png}"), File::FNM_CASEFOLD).uniq.sort.each do |source|
+      base       = File.basename(source, ".*")
+      source_ext = File.extname(source).delete(".").downcase
+      fallback   = source_ext == "jpeg" ? "jpg" : source_ext
+      src_kb     = File.size(source) / 1024
+
+      puts "#{base} (#{src_kb} KB #{source_ext})"
+
+      widths.each do |w|
+        [["webp", webp_quality], [fallback, fallback == "jpg" ? jpeg_quality : nil]].each do |fmt, q|
+          out = output_dir.join("#{base}-#{w}.#{fmt}")
+          if out.exist? && out.mtime >= File.mtime(source)
+            skipped += 1
+            next
+          end
+
+          pipeline = ImageProcessing::Vips.source(source).resize_to_limit(w, nil)
+          pipeline = pipeline.saver(quality: q) if q
+          pipeline.convert(fmt).call(destination: out.to_s)
+
+          puts "  -> #{w}w #{fmt.upcase}: #{File.size(out) / 1024} KB"
+          written += 1
+        end
+      end
+    end
+
+    puts ""
+    puts "Wrote #{written} files, skipped #{skipped} up-to-date."
+  end
 end
