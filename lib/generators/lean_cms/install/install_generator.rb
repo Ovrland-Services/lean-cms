@@ -20,33 +20,81 @@ module LeanCms
       end
 
       # Stop before any side effects if the host doesn't have a user model
-      # with a matching table yet. The Lean CMS migrations have foreign keys
-      # pointing at this table (default `:users`); without it, db:migrate
-      # blows up partway through and leaves the database in a half-set-up state.
+      # with a matching table yet, or the existing table is missing the base
+      # columns (email_address, password_digest) Lean CMS hard-codes against.
       def check_user_model
         user_class = options[:user_class]
         table_name = user_class.tableize
 
-        return if ActiveRecord::Base.connection.table_exists?(table_name)
+        unless ActiveRecord::Base.connection.table_exists?(table_name)
+          say "\n#{"=" * 64}", :red
+          say "Lean CMS install can't continue.", :red
+          say "=" * 64, :red
+          say ""
+          say "No `#{table_name}` table found in your database."
+          say ""
+          say "Lean CMS expects an existing #{user_class} model. Set one up first:"
+          say ""
+          say "  - Rails 8 built-in auth:  bin/rails generate authentication"
+          say "  - Devise / Clearance / etc.: install per that gem's instructions"
+          say "  - Custom model:  bin/rails generate model #{user_class} ...", :yellow
+          say ""
+          say "Then run  bin/rails db:migrate  and re-run this generator."
+          say ""
+          say "If your user model isn't named #{user_class}, pass --user=ClassName:"
+          say "  bin/rails generate lean_cms:install --user=Admin"
+          say ""
+          exit 1
+        end
+
+        existing = ActiveRecord::Base.connection.columns(table_name).map(&:name)
+        required_base = %w[email_address password_digest]
+        missing_base = required_base - existing
+
+        return if missing_base.empty?
 
         say "\n#{"=" * 64}", :red
         say "Lean CMS install can't continue.", :red
         say "=" * 64, :red
         say ""
-        say "No `#{table_name}` table found in your database."
+        say "The `#{table_name}` table is missing required columns: #{missing_base.join(", ")}."
         say ""
-        say "Lean CMS expects an existing #{user_class} model. Set one up first:"
+        say "Lean CMS authenticates with `#{user_class}.authenticate_by(email_address:, password:)`,"
+        say "so both `email_address` and `password_digest` columns are required."
         say ""
-        say "  - Rails 8 built-in auth:  bin/rails generate authentication"
-        say "  - Devise / Clearance / etc.: install per that gem's instructions"
-        say "  - Custom model:  bin/rails generate model #{user_class} ...", :yellow
-        say ""
-        say "Then run  bin/rails db:migrate  and re-run this generator."
-        say ""
-        say "If your user model isn't named #{user_class}, pass --user=ClassName:"
-        say "  bin/rails generate lean_cms:install --user=Admin"
+        say "Add them yourself (rename `email` -> `email_address` if you have it, etc.) and re-run."
         say ""
         exit 1
+      end
+
+      # Generate a migration that adds the Lean CMS-specific columns the host
+      # user table doesn't already have (name, active, permission flags, …).
+      # Silently skips if everything's already in place. The migration runs
+      # as part of `db:migrate` in `run_migrations` below.
+      def add_missing_user_columns
+        user_class = options[:user_class]
+        @user_table = user_class.tableize
+        existing = ActiveRecord::Base.connection.columns(@user_table).map(&:name)
+
+        required = [
+          [:name,                 :string,   {}],
+          [:active,               :boolean,  { default: true,  null: false }],
+          [:must_change_password, :boolean,  { default: false, null: false }],
+          [:last_login_at,        :datetime, {}],
+          [:is_super_admin,       :boolean,  { default: false, null: false }],
+          [:can_edit_pages,       :boolean,  { default: false, null: false }],
+          [:can_edit_blog,        :boolean,  { default: false, null: false }],
+          [:can_manage_users,     :boolean,  { default: false, null: false }],
+          [:can_access_settings,  :boolean,  { default: false, null: false }]
+        ]
+
+        @missing_columns = required.reject { |name, _, _| existing.include?(name.to_s) }
+        return if @missing_columns.empty?
+
+        say "Generating migration to add Lean CMS columns to `#{@user_table}` " \
+            "(#{@missing_columns.map(&:first).join(", ")})...", :yellow
+        migration_template "add_lean_cms_columns_to_users.rb.tt",
+                           "db/migrate/add_lean_cms_columns_to_#{@user_table}.rb"
       end
 
       def copy_initializer

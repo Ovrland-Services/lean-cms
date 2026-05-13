@@ -1,0 +1,7 @@
+class AddLeanCmsColumnsTo<%= @user_table.camelize %> < ActiveRecord::Migration[8.0]
+  def change
+<% @missing_columns.each do |name, type, opts| -%>
+    add_column :<%= @user_table %>, :<%= name %>, :<%= type %><% if opts.any? %>, <%= opts.map { |k, v| "#{k}: #{v.inspect}" }.join(", ") %><% end %>
+<% end -%>
+  end
+end
