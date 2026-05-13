@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `lean_cms:optimize_images` rake task — reads originals from `app/assets/images/source/` and emits resized WebP + same-format fallback variants (default widths: 640/1280/1920) into `app/assets/images/`. Overridable via `WIDTHS`, `WEBP_QUALITY`, `JPEG_QUALITY` env vars. Idempotent (skips outputs newer than source). Powered by libvips via `image_processing`.
+- `lean_cms_picture_tag(name, alt:, widths:, format:, sizes:, **img_options)` helper — renders a `<picture>` with a WebP `<source>` and a JPG/PNG fallback `<img>`, both with proper `srcset` for the configured widths. Defaults to lazy loading and async decoding. Use for static layout images optimized via `lean_cms:optimize_images`.
 - `app/assets/tailwind/lean_cms/engine.css` — hooks into `tailwindcss-rails` v4 engine support so the gem's views and Stimulus controllers are scanned when compiling Tailwind CSS in the host app, fixing missing utility classes in production
 - Content Sync card in Settings page showing live lock status with lock/unlock buttons and reason field
 - Lock status banner in the CMS admin layout — displayed prominently across all pages when content is locked, with an inline Unlock button
