@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= content_for?(:title) ? "#{yield(:title)} - " : "" %><%= LeanCms.site_name %></title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cms-primary: <%= LeanCms.primary_color %>;
+      --cms-secondary: <%= LeanCms.secondary_color %>;
+    }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .lc-btn-primary { background-color: var(--cms-primary); }
+    .lc-btn-primary:hover { filter: brightness(0.92); }
+    .lc-link-primary { color: var(--cms-primary); }
+    .lc-link-primary:hover { filter: brightness(0.85); }
+    .lc-focus:focus { border-color: var(--cms-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cms-primary) 20%, transparent); }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 antialiased flex flex-col">
+  <main class="flex-1 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md">
+      <% if LeanCms.site_logo_path.present? %>
+        <div class="mb-8 flex justify-center">
+          <%= image_tag LeanCms.site_logo_path, alt: LeanCms.site_name, class: "h-12 w-auto" %>
+        </div>
+      <% end %>
+
+      <div class="bg-white shadow-lg rounded-2xl border border-gray-100 p-8">
+        <% if alert = flash[:alert] %>
+          <p class="py-2 px-3 bg-red-50 mb-5 text-red-600 font-medium rounded-lg text-sm" role="alert"><%= alert %></p>
+        <% end %>
+
+        <% if notice = flash[:notice] %>
+          <p class="py-2 px-3 bg-green-50 mb-5 text-green-700 font-medium rounded-lg text-sm" role="status"><%= notice %></p>
+        <% end %>
+
+        <%= yield %>
+      </div>
+
+      <p class="text-center text-xs text-gray-500 mt-6">
+        <%= LeanCms.site_name %>
+      </p>
+    </div>
+  </main>
+</body>
+</html>

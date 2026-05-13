@@ -7,7 +7,8 @@ module LeanCms
                   :admin_path,
                   :user_class,
                   :posts_per_page,
-                  :portfolio_enabled
+                  :portfolio_enabled,
+                  :mailer_from
 
     def configure
       yield self
@@ -23,4 +24,5 @@ module LeanCms
   self.user_class       = "User"
   self.posts_per_page   = 10
   self.portfolio_enabled = true
+  self.mailer_from      = "noreply@example.com"
 end
