@@ -1,7 +1,7 @@
 <div class="max-w-4xl">
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900">CMS Settings</h1>
-    <p class="text-gray-600 mt-2">Configure your LeanCMS preferences</p>
+    <p class="text-gray-600 mt-2">Configure your Lean CMS preferences</p>
   </div>
 
   <!-- Content Sync -->
@@ -150,7 +150,7 @@ bin/rails lean_cms:sync:finish  # push DB + unlock</code></pre>
     <!-- Branding -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h2 class="text-xl font-semibold text-gray-900 mb-4">Branding</h2>
-      <p class="text-sm text-gray-600 mb-4">The favicon shown in browser tabs for the public site. Leave blank to use the LeanCMS sloth as the default. Recommended: a 32×32 or 64×64 PNG (or .ico).</p>
+      <p class="text-sm text-gray-600 mb-4">The favicon shown in browser tabs for the public site. Leave blank to use the Lean CMS sloth as the default. Recommended: a 32×32 or 64×64 PNG (or .ico).</p>
 
       <div class="flex items-center gap-4">
         <% if (current_favicon = LeanCms::Setting.site_favicon_url) %>
@@ -168,7 +168,7 @@ bin/rails lean_cms:sync:finish  # push DB + unlock</code></pre>
           <div class="flex-1">
             <%= label_tag :site_favicon, "Upload custom favicon", class: "block text-sm font-medium text-gray-700 mb-1" %>
             <%= file_field_tag :site_favicon, accept: "image/png,image/x-icon,image/svg+xml", class: "block text-sm text-gray-700" %>
-            <p class="text-xs text-gray-500 mt-1">Currently using the LeanCMS sloth.</p>
+            <p class="text-xs text-gray-500 mt-1">Currently using the Lean CMS sloth.</p>
           </div>
         <% end %>
       </div>

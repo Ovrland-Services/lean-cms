@@ -8,7 +8,7 @@ module LeanCms
 
       source_root File.expand_path("templates", __dir__)
 
-      desc "Installs LeanCMS into the host Rails application"
+      desc "Installs Lean CMS into the host Rails application"
 
       def self.next_migration_number(dirname)
         next_migration_number = current_migration_number(dirname) + 1
@@ -31,7 +31,7 @@ module LeanCms
 
       def print_instructions
         say "\n#{"=" * 64}", :green
-        say "LeanCMS installed!", :green
+        say "Lean CMS installed!", :green
         say "=" * 64, :green
         say ""
         say "1. Configure your site", :yellow
@@ -63,7 +63,7 @@ module LeanCms
         say "   last_login_at (datetime), and permission flags is_super_admin, can_edit_pages,"
         say "   can_edit_blog, can_manage_users, can_access_settings (all booleans)."
         say ""
-        say "3. Include LeanCMS in ApplicationController", :yellow
+        say "3. Include Lean CMS in ApplicationController", :yellow
         say "   class ApplicationController < ActionController::Base"
         say "     include LeanCms::Authentication"
         say "     include Pundit::Authorization"

@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Ovrland-Services/lean-cms/main/app/assets/images/lean_cms/sloth-logo.png" alt="LeanCMS sloth mascot — a sloth reclining on a beanbag chair with sunglasses and a Ruby-stickered laptop" width="240">
+  <img src="https://raw.githubusercontent.com/Ovrland-Services/lean-cms/main/app/assets/images/lean_cms/sloth-logo.png" alt="Lean CMS sloth mascot — a sloth reclining on a beanbag chair with sunglasses and a Ruby-stickered laptop" width="240">
 </p>
 
-<h1 align="center">LeanCMS</h1>
+<h1 align="center">Lean CMS</h1>
 
 <p align="center">
   A lightweight Rails CMS with in-context editing for marketing sites.
@@ -12,13 +12,13 @@
 
 ---
 
-LeanCMS is a Rails Engine that adds in-context content editing, page content
+Lean CMS is a Rails Engine that adds in-context content editing, page content
 management, blog & portfolio, settings, role-based authentication, and
 notifications to any Rails 8 application. It's designed for SQLite-based
 marketing sites: server-rendered, single-binary deploys, no separate CMS to
 host.
 
-## Why LeanCMS
+## Why Lean CMS
 
 - **In-context editing** — content editors hover over any page section to
   reveal an Edit overlay; no separate "admin" interface for day-to-day edits.
