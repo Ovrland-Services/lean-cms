@@ -282,5 +282,32 @@ module LeanCms
         end)
       end
     end
+
+    # Render a responsive <picture> for an image processed by `lean_cms:optimize_images`.
+    #
+    # The optimizer produces `<name>-<width>.webp` and `<name>-<width>.<fallback>`
+    # variants under app/assets/images/. This helper emits a <picture> with the WebP
+    # source and a JPG/PNG fallback img, both with srcset for the configured widths.
+    #
+    # Usage:
+    #   lean_cms_picture_tag("wire-panel", alt: "Wiring", class: "rounded-2xl")
+    #   lean_cms_picture_tag("cas-logo", alt: "CAS", format: :png, widths: [128, 256])
+    def lean_cms_picture_tag(name, alt:, widths: [640, 1280, 1920], format: :jpg, sizes: "100vw", **img_options)
+      fallback_ext = format.to_s
+      webp_srcset     = widths.map { |w| "#{asset_path("#{name}-#{w}.webp")} #{w}w" }.join(", ")
+      fallback_srcset = widths.map { |w| "#{asset_path("#{name}-#{w}.#{fallback_ext}")} #{w}w" }.join(", ")
+      default_width   = widths.max
+
+      content_tag(:picture) do
+        concat(tag(:source, type: "image/webp", srcset: webp_srcset, sizes: sizes))
+        concat(image_tag("#{name}-#{default_width}.#{fallback_ext}",
+                         srcset: fallback_srcset,
+                         sizes: sizes,
+                         alt: alt,
+                         loading: img_options.delete(:loading) || "lazy",
+                         decoding: img_options.delete(:decoding) || "async",
+                         **img_options))
+      end
+    end
   end
 end
