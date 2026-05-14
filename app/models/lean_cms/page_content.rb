@@ -14,9 +14,12 @@ module LeanCms
     # this helper is the seam every internal write goes through during the
     # in-progress migration to the normalized LeanCms::Page model.
     def self.find_or_initialize_content(page:, section:, key:)
-      where(page: page, section: section, key: key).first || new(section: section, key: key).tap do |record|
-        record[:page] = page
-      end
+      # Look up against the `page` varchar column explicitly. `where(page: ...)`
+      # would resolve `:page` to the `belongs_to :page` association and emit
+      # `WHERE page_id = NULL`, missing every existing record — which made
+      # re-running load_structure crash on the SQLite unique index.
+      where("page = ? AND section = ? AND key = ?", page.to_s, section.to_s, key.to_s).first ||
+        new(section: section, key: key).tap { |record| record[:page] = page }
     end
 
     # Validate the slug column directly (read_attribute) rather than `:page`,

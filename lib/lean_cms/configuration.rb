@@ -8,7 +8,8 @@ module LeanCms
                   :user_class,
                   :posts_per_page,
                   :portfolio_enabled,
-                  :mailer_from
+                  :mailer_from,
+                  :docs_url
 
     def configure
       yield self
@@ -25,4 +26,7 @@ module LeanCms
   self.posts_per_page   = 10
   self.portfolio_enabled = true
   self.mailer_from      = "noreply@example.com"
+  # Where the "?" icon in the admin header sends editors. Override in your
+  # initializer to point at your internal handbook instead of the public docs.
+  self.docs_url         = "https://leancms.dev/docs/"
 end
