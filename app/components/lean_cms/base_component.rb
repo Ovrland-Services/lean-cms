@@ -16,11 +16,19 @@ module LeanCms
       LeanCms::Setting.get('in_context_editing', 'true') == 'true'
     end
 
-    # Generate cache key for this component
+    # Generate cache key for this component.
+    # Pre-normalization era: `page` may be a raw slug String. In that case we
+    # don't have a Page record to read updated_at off of, so fall back to the
+    # max(updated_at) over PageContent rows for that slug — which is touched
+    # whenever an editor changes any content on the page.
     def cache_key(identifier)
-      page_slug = page.is_a?(LeanCms::Page) ? page.slug : page.to_s
-      # Include page updated_at to bust cache when any PageContent changes (via touch: true)
-      ["lean_cms", page_slug, identifier, page&.updated_at&.to_i, can_edit_cms?]
+      page_updated_at = if page.is_a?(LeanCms::Page)
+        page.updated_at
+      else
+        LeanCms::PageContent.where(page: page.to_s).maximum(:updated_at)
+      end
+
+      ["lean_cms", page_slug, identifier, page_updated_at&.to_i, can_edit_cms?]
     end
 
     # Get page slug (string)
