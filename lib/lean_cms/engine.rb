@@ -65,6 +65,26 @@ module LeanCms
       File.write(host_css, source_css.read)
     end
 
+    # Action Text ships a CSS file via `bin/rails action_text:install`, but
+    # the gem's admin layout references it via `stylesheet_link_tag "actiontext"`
+    # before that step would normally run. Drop a default copy into the host's
+    # app/assets/stylesheets/ so a fresh install boots without a
+    # Propshaft::MissingAssetError. Hosts can edit / replace the file freely;
+    # we only write it once.
+    initializer "lean_cms.actiontext_css" do |app|
+      next if app.root.to_s == root.to_s
+
+      host_css = app.root.join("app/assets/stylesheets/actiontext.css")
+      next if host_css.exist?
+
+      require "fileutils"
+      source_css = root.join("app/assets/lean_cms/actiontext.css")
+      next unless source_css.exist?
+
+      FileUtils.mkdir_p(host_css.dirname)
+      File.write(host_css, source_css.read)
+    end
+
     # Load rake tasks
     rake_tasks do
       load LeanCms::Engine.root.join("lib/tasks/lean_cms.rake")

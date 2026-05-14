@@ -1,4 +1,8 @@
-<% 
+<%
+  # Host User models don't have to ship a `notifications` association — the
+  # bell hides itself when they don't, which lets hosts that don't want
+  # Noticed integration opt out by just leaving the association off.
+  return unless current_user.respond_to?(:notifications)
   unread_count = current_user.notifications.unread.count
   recent_notifications = current_user.notifications.unread.limit(5).order(created_at: :desc)
 %>

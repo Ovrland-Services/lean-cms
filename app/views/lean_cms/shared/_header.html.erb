@@ -40,10 +40,10 @@
         </div>
         <div class="hidden md:block text-left">
           <p class="text-sm font-medium text-gray-900">
-            <%= current_user.email_address.split('@').first %>
+            <%= current_user.respond_to?(:display_name) ? current_user.display_name : current_user.email_address.split("@").first %>
           </p>
           <p class="text-xs text-gray-500">
-            <%= current_user.permissions_summary %>
+            <%= current_user.respond_to?(:permissions_summary) ? current_user.permissions_summary : current_user.email_address %>
           </p>
         </div>
         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
