@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.5] — 2026-05-14
 
-Follow-up to v0.2.4 — the load_structure path had a *second* collision around the `page` association shadowing the `page` slug column.
+Two more bugs surfaced bootstrapping the demo site on top of v0.2.4. Both are pre-existing, both block a fresh install from completing `lean_cms:load_structure`.
 
 ### Fixed
 - **`lean_cms:load_structure` no longer fails with "Page can't be blank" after the v0.2.4 fix.** With the slug now correctly written to the string column via `record[:page] = page`, validation still failed because `validates :page, presence: true` was checking the `belongs_to :page` association (which is `optional: true` and has a nil `page_id` on fresh installs). Replaced with `validate :page_slug_present` reading `read_attribute(:page)` so presence is enforced on the slug column. Added a `page_slug` reader as the public accessor for the slug, alongside the association.
+- **Gem now ships the PaperTrail `versions` table migration.** Four gem models (`PageContent`, `Setting`, `Post`, `FormSubmission`) call `has_paper_trail`, but the install never created the underlying table. The first write on a fresh install crashed with `Could not find table 'versions'`. Added `db/migrate/20260514000001_create_paper_trail_versions.rb`; uses `create_table :versions, if_not_exists: true` plus a guarded `add_index`, so existing installs that ran `paper_trail:install` separately are unaffected.
 
 ## [0.2.4] — 2026-05-14
 
