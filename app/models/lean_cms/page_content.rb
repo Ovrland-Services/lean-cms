@@ -19,10 +19,18 @@ module LeanCms
       end
     end
 
-    validates :page, :section, :key, presence: true
+    # Validate the slug column directly (read_attribute) rather than `:page`,
+    # which `belongs_to :page` shadows — a `presence: true` check on the
+    # association would require a loaded LeanCms::Page record, not a slug.
+    validates :section, :key, presence: true
     validates :key, uniqueness: { scope: [:page, :section] }
     validates :content_type, presence: true
     validate :validate_max_length
+    validate :page_slug_present
+
+    def page_slug
+      read_attribute(:page)
+    end
 
     # Content types: text, rich_text, image, boolean, url, color, dropdown, cards, bullets
     enum :content_type, {
@@ -187,6 +195,12 @@ module LeanCms
     end
 
     private
+
+    # Custom presence check that reads the `page` varchar column directly
+    # rather than going through the `belongs_to :page` association.
+    def page_slug_present
+      errors.add(:page, "can't be blank") if page_slug.blank?
+    end
 
     # Validate value doesn't exceed max_length
     def validate_max_length
