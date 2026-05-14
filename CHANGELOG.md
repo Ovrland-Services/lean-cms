@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5] — 2026-05-14
+
+Two more bugs surfaced bootstrapping the demo site on top of v0.2.4. Both are pre-existing, both block a fresh install from completing `lean_cms:load_structure`.
+
+### Fixed
+- **`lean_cms:load_structure` no longer fails with "Page can't be blank" after the v0.2.4 fix.** With the slug now correctly written to the string column via `record[:page] = page`, validation still failed because `validates :page, presence: true` was checking the `belongs_to :page` association (which is `optional: true` and has a nil `page_id` on fresh installs). Replaced with `validate :page_slug_present` reading `read_attribute(:page)` so presence is enforced on the slug column. Added a `page_slug` reader as the public accessor for the slug, alongside the association.
+- **Gem now ships the PaperTrail `versions` table migration.** Four gem models (`PageContent`, `Setting`, `Post`, `FormSubmission`) call `has_paper_trail`, but the install never created the underlying table. The first write on a fresh install crashed with `Could not find table 'versions'`. Added `db/migrate/20260514000001_create_paper_trail_versions.rb`; uses `create_table :versions, if_not_exists: true` plus a guarded `add_index`, so existing installs that ran `paper_trail:install` separately are unaffected.
+- **Gem now ships the Action Text + Active Storage migrations.** `LeanCms::PageContent` calls `has_rich_text :rich_content`, `has_one_attached :image_file`, and `has_many_attached :card_images`; `LeanCms::Setting` calls `has_one_attached :file`. Without these tables, `lean_cms:load_structure` fails the moment it hits the first `rich_text` field. Added `db/migrate/20260514000002_create_action_text_tables.rb` and `db/migrate/20260514000003_create_active_storage_tables.rb`, both fully idempotent — hosts that ran `action_text:install` / `active_storage:install` separately get no-ops.
+- **`(page, section, key)` uniqueness now scopes on the slug column, not the association FK.** The built-in `validates :key, uniqueness: { scope: [:page, :section] }` resolved `:page` to `page_id` (always NULL on fresh installs until the slug → `LeanCms::Page` normalization completes), so the scope collapsed to just `:section`. Records with the same section + key on different pages (e.g. `home/hero/heading` and `trips/hero/heading`) all blocked each other with "Key has already been taken". Replaced with a custom `validate :key_unique_within_page_section` that scopes on the slug via `read_attribute(:page)`.
+
 ## [0.2.4] — 2026-05-14
 
 Surfaced while bootstrapping a fresh demo site from `lean_cms_structure.yml`.
@@ -133,7 +143,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.4...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.5...HEAD
+[0.2.5]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.1...v0.2.2

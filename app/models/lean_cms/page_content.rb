@@ -19,10 +19,24 @@ module LeanCms
       end
     end
 
-    validates :page, :section, :key, presence: true
-    validates :key, uniqueness: { scope: [:page, :section] }
+    # Validate the slug column directly (read_attribute) rather than `:page`,
+    # which `belongs_to :page` shadows — a `presence: true` check on the
+    # association would require a loaded LeanCms::Page record, not a slug.
+    validates :section, :key, presence: true
+    # Built-in uniqueness with scope: [:page, :section] resolves `:page` to
+    # the `page_id` association FK (NULL on fresh installs until the legacy
+    # string slug → LeanCms::Page normalization completes), which collapses
+    # the scope to just `:section` and triggers spurious collisions for
+    # repeated keys like `heading` across pages. We check the slug column
+    # directly instead.
+    validate :key_unique_within_page_section
     validates :content_type, presence: true
     validate :validate_max_length
+    validate :page_slug_present
+
+    def page_slug
+      read_attribute(:page)
+    end
 
     # Content types: text, rich_text, image, boolean, url, color, dropdown, cards, bullets
     enum :content_type, {
@@ -187,6 +201,23 @@ module LeanCms
     end
 
     private
+
+    # Custom presence check that reads the `page` varchar column directly
+    # rather than going through the `belongs_to :page` association.
+    def page_slug_present
+      errors.add(:page, "can't be blank") if page_slug.blank?
+    end
+
+    # Custom uniqueness check scoped on the slug column, not the
+    # association FK. See validate :key_unique_within_page_section above.
+    def key_unique_within_page_section
+      return if page_slug.blank? || section.blank? || key.blank?
+
+      scope = self.class
+                  .where(page: page_slug, section: section, key: key)
+      scope = scope.where.not(id: id) if persisted?
+      errors.add(:key, "has already been taken") if scope.exists?
+    end
 
     # Validate value doesn't exceed max_length
     def validate_max_length
