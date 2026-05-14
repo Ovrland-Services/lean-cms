@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.8] — 2026-05-14
+
+Small ergonomic follow-up to v0.2.7.
+
+### Added
+- **`cms_admin_bar` helper.** Wrapper around `render "lean_cms/shared/admin_bar"` so hosts don't have to remember the partial path. Available everywhere `LeanCms::PageContentHelper` is included.
+- **Install generator output now documents the admin bar wiring.** New step 5 in the post-install instructions shows the exact `<body>` snippet hosts should paste into their public layout to surface the bar.
+
 ## [0.2.7] — 2026-05-14
 
 Polish pass after putting the demo live at `demo.leancms.dev`. One bug fix, two ergonomic additions hosts can lean on instead of rebuilding themselves.
@@ -162,7 +170,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.7...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.8...HEAD
+[0.2.8]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.4...v0.2.5

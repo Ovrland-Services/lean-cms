@@ -148,6 +148,21 @@ module LeanCms
       render LeanCms::BulletsSectionComponent.new(page: page, section: section, **options)
     end
 
+    # Render the Lean CMS admin bar (fixed top strip with Inline Editing
+    # toggle, Help, Admin Dashboard, Sign Out). Returns an empty string for
+    # signed-out visitors and users without CMS permissions, so it's safe to
+    # call unconditionally from your public layout.
+    #
+    # Usage in your host application.html.erb:
+    #
+    #   <body class="<%= 'pt-10' if current_user&.has_any_cms_permission? %>">
+    #     <%= cms_admin_bar %>
+    #     …your header / content…
+    #   </body>
+    def cms_admin_bar
+      render "lean_cms/shared/admin_bar"
+    end
+
     # Render cards section with partial (legacy method for backward compatibility)
     # Usage: render_cards_section('about', 'certifications_standards')
     def render_cards_section(page, section, **options)

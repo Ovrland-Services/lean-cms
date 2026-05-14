@@ -242,14 +242,25 @@ module LeanCms
         say "     include LeanCms::PageContentHelper"
         say "   end"
         say ""
-        say "5. Seed your site structure", :yellow
+        say "5. Add the admin bar to your public layout (optional but recommended)", :yellow
+        say "   In app/views/layouts/application.html.erb:"
+        say ""
+        say "     <body class=\"<%= 'pt-10' if current_user&.has_any_cms_permission? %>\">"
+        say "       <%= cms_admin_bar %>"
+        say "       <!-- your header / content -->"
+        say "     </body>"
+        say ""
+        say "   Gives signed-in editors a fixed strip with Inline Editing toggle,"
+        say "   Help, Admin Dashboard, and Sign Out. Renders nothing for public visitors."
+        say ""
+        say "6. Seed your site structure", :yellow
         say "   Edit config/lean_cms_structure.yml, then:"
         say "     bin/rails lean_cms:load_structure"
         say ""
-        say "6. Create your first admin", :yellow
+        say "7. Create your first admin", :yellow
         say "   bin/rails runner 'User.create!(email_address: \"admin@example.com\", password: \"change-me\", name: \"Admin\", active: true, is_super_admin: true)'"
         say ""
-        say "7. Start the server and log in", :yellow
+        say "8. Start the server and log in", :yellow
         say "   bin/dev   (or  rails server)"
         say "   Visit  /lean-cms/login"
         say ""
