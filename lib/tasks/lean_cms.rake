@@ -58,7 +58,7 @@ namespace :lean_cms do
 
           total_fields += 1
 
-          content_record = LeanCms::PageContent.find_or_initialize_by(
+          content_record = LeanCms::PageContent.find_or_initialize_content(
             page: page_key,
             section: section_key,
             key: field_key
@@ -125,7 +125,7 @@ namespace :lean_cms do
         if cards_data && cards_data['items']
           total_fields += 1
 
-          card_record = LeanCms::PageContent.find_or_initialize_by(
+          card_record = LeanCms::PageContent.find_or_initialize_content(
             page: page_key,
             section: section_key,
             key: 'cards'
@@ -176,7 +176,7 @@ namespace :lean_cms do
         if (bullets_data = section_data['bullets']) && bullets_data['items']
           total_fields += 1
 
-          bullet_record = LeanCms::PageContent.find_or_initialize_by(
+          bullet_record = LeanCms::PageContent.find_or_initialize_content(
             page: page_key,
             section: section_key,
             key: 'bullets'

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.4] — 2026-05-14
+
+Surfaced while bootstrapping a fresh demo site from `lean_cms_structure.yml`.
+
+### Fixed
+- **`lean_cms:load_structure` no longer crashes with `ActiveRecord::AssociationTypeMismatch: LeanCms::Page expected, got "home"`.** `LeanCms::PageContent` has both a string column `page` (the slug) and a `belongs_to :page, class_name: 'LeanCms::Page'` association (FK on `page_id`). The association shadows the column for mass assignment, so `find_or_initialize_by(page: page_key, …)` was trying to coerce the slug string into a `LeanCms::Page` instance. Introduced `LeanCms::PageContent.find_or_initialize_content(page:, section:, key:)` which bypasses the association setter and writes the slug directly to the string column; the three call sites in the rake task (regular fields, cards, bullets) now route through it. Existing installs continue to work — the helper is purely additive.
+
 ## [0.2.3] — 2026-05-14
 
 Doc-accuracy pass surfaced a couple of small gaps in the gem itself; rolled into this release.
@@ -126,7 +133,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.0...v0.2.1
