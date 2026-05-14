@@ -7,6 +7,18 @@ module LeanCms
     belongs_to :page, class_name: 'LeanCms::Page', optional: true, touch: true
     belongs_to :last_edited_by, class_name: 'User', optional: true
 
+    # Look up a content record by its (page-slug, section, key) triple, or
+    # build a new one — bypassing the :page association setter so the string
+    # `page` column gets the slug instead of an AssociationTypeMismatch.
+    # `belongs_to :page` shadows the `page` varchar column for mass-assignment;
+    # this helper is the seam every internal write goes through during the
+    # in-progress migration to the normalized LeanCms::Page model.
+    def self.find_or_initialize_content(page:, section:, key:)
+      where(page: page, section: section, key: key).first || new(section: section, key: key).tap do |record|
+        record[:page] = page
+      end
+    end
+
     validates :page, :section, :key, presence: true
     validates :key, uniqueness: { scope: [:page, :section] }
     validates :content_type, presence: true
