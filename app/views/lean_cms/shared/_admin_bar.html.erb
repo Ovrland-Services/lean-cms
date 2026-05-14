@@ -1,15 +1,3 @@
-<%# Lean CMS admin bar — fixed top strip for signed-in CMS users.
-    Provides the Inline Editing toggle, Admin Dashboard link, Sign Out, and
-    a Help icon. Renders nothing when no one is signed in or the user has
-    no CMS permissions.
-
-    Usage from a host layout:
-      <%%= render "lean_cms/shared/admin_bar" %%>
-
-    Push your `<body>`'s top padding down by ~40px when this is on screen
-    so it doesn't overlap your own header. CAS does this with a Tailwind
-    `pt-10` class gated on `current_user&.has_any_cms_permission?`.
-%>
 <% return unless respond_to?(:current_user) && current_user&.has_any_cms_permission? %>
 
 <div class="fixed top-0 left-0 right-0 bg-gray-900 text-white py-2 px-6 text-sm z-[60]"
