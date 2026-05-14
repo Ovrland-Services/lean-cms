@@ -4,3 +4,11 @@
 
 @source "../../../../app/views/**/*.erb";
 @source "../../../../app/javascript/controllers/**/*.js";
+
+/* Safelist for class names that the gem's view components interpolate at
+   runtime (e.g. `gap-<%= gap %>` in CardsSectionComponent). Tailwind's
+   @source scanner reads literal strings only — it can't follow ERB — so
+   those utilities never make it into the host's compiled CSS unless they
+   appear elsewhere or are safelisted here. */
+@source inline("md:grid-cols-{1,2,3,4,5,6}");
+@source inline("gap-{2,3,4,5,6,8,10,12}");
