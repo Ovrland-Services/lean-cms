@@ -63,9 +63,11 @@
      attached anywhere to handle it. -->
 <div data-controller="field-editor-modal"
      data-field-editor-modal-target="modal"
-     class="cms-modal hidden fixed inset-0 z-[10000] flex items-center justify-center"
-     data-action="click->field-editor-modal#handleBackdropClick">
-  <div class="absolute inset-0 bg-black opacity-50"></div>
+     class="cms-modal hidden fixed inset-0 z-[10000] flex items-center justify-center">
+  <!-- Backdrop. Closing on backdrop-click is wired here directly so it
+       fires even though the panel below intercepts clicks within it. -->
+  <div class="absolute inset-0 bg-black opacity-50"
+       data-action="click->field-editor-modal#close"></div>
 
   <div class="relative bg-white rounded-lg shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
     <div data-field-editor-modal-target="loader" class="p-12 text-center">
