@@ -180,6 +180,35 @@ module LeanCms
         CSS
       end
 
+      # Add `import "trix"` + `import "@rails/actiontext"` to the host's
+      # application.js so the field-editor modal's Trix editor loads for
+      # rich_text fields. The gem's own importmap.rb already pins them;
+      # this step is just the import line in the host entry point.
+      def wire_actiontext_imports
+        app_js = File.join(destination_root, "app/javascript/application.js")
+        unless File.exist?(app_js)
+          say "Skipping Action Text JS wire-up — no app/javascript/application.js found.", :yellow
+          say "  If you use importmap-rails, add these lines to your application.js:", :yellow
+          say "    import \"trix\"", :cyan
+          say "    import \"@rails/actiontext\"", :cyan
+          return
+        end
+
+        contents = File.read(app_js)
+        if contents.include?('import "trix"') || contents.include?("import 'trix'")
+          say "application.js already imports trix — skipping.", :cyan
+          return
+        end
+
+        say "Adding trix + @rails/actiontext imports to app/javascript/application.js", :green
+        append_to_file app_js, <<~JS
+
+          // Lean CMS uses Trix in the field-editor modal for rich_text fields.
+          import "trix"
+          import "@rails/actiontext"
+        JS
+      end
+
       def run_migrations
         rake "db:migrate"
       end
