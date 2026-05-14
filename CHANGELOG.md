@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.5] — 2026-05-14
+## [0.2.6] — 2026-05-14
+
+Next demo-bootstrap fix on top of v0.2.5 — `cards_section` and `bullets_section` were crashing in views with `undefined method 'updated_at' for an instance of String`.
+
+### Fixed
+- **`LeanCms::BaseComponent#cache_key` handles the String-slug `page` form.** The cache key called `page&.updated_at&.to_i` assuming `page` was always a `LeanCms::Page` record. In the standard helper-driven usage `cards_section("offerings")`, `page` is the slug String (`"trips"`) and `String#updated_at` blew up. Now uses `LeanCms::PageContent.where(page: slug).maximum(:updated_at)` as the cache-key timestamp when `page` isn't a Page record — preserves `touch: true` invalidation through the legacy path.
 
 Two more bugs surfaced bootstrapping the demo site on top of v0.2.4. Both are pre-existing, both block a fresh install from completing `lean_cms:load_structure`.
 
@@ -143,7 +148,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.5...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.6...HEAD
+[0.2.6]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.2...v0.2.3
