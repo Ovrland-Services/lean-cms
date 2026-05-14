@@ -176,7 +176,9 @@
     <div class="lc-auth-shell">
       <% if LeanCms.site_logo_path.present? %>
         <div class="lc-auth-logo">
-          <%= image_tag LeanCms.site_logo_path, alt: LeanCms.site_name %>
+          <%= link_to image_tag(LeanCms.site_logo_path, alt: LeanCms.site_name),
+                "/",
+                title: "Back to #{LeanCms.site_name}" %>
         </div>
       <% end %>
 
