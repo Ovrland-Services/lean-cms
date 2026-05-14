@@ -1,5 +1,22 @@
 /* CMS Edit Controls - In-context editing for logged-in CMS users */
 
+/* All interactive elements rendered by the CMS — admin bar buttons, modal
+   editor controls, the close-X — should show a pointer cursor on hover.
+   Tailwind v4's preflight no longer sets cursor:pointer on <button>, so we
+   restore it here scoped to the CMS UI surfaces. */
+.cms-modal a,
+.cms-modal button,
+.cms-modal [role="button"],
+.cms-modal input[type="submit"],
+.cms-modal input[type="button"],
+.cms-modal label[for],
+[data-controller~="inline-edit-toggle"] a,
+[data-controller~="inline-edit-toggle"] button,
+[data-controller~="inline-edit-toggle"] [role="button"],
+[data-controller~="inline-edit-toggle"] label[for] {
+  cursor: pointer;
+}
+
 .cms-editable-section {
   position: relative !important;
   border: 2px dashed transparent !important;

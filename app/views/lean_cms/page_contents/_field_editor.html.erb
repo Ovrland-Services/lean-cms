@@ -5,7 +5,7 @@
       <p class="text-sm text-gray-600 mt-1"><%= field.page&.title || field.read_attribute(:page)&.titleize %> › <%= field.section.humanize %></p>
     </div>
     <button type="button" data-action="click->field-editor-modal#close"
-            class="text-gray-400 hover:text-gray-600">
+            class="cursor-pointer text-gray-400 hover:text-gray-600">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
       </svg>
@@ -20,7 +20,12 @@
     <div class="space-y-4">
       <% case field.content_type.to_sym %>
       <% when :rich_text %>
-        <%= rich_text_area_tag 'value', field.display_value,
+        <%# display_value for rich_text returns the FULL rendered partial
+            (action_text/contents/_content.html.erb), which wraps the body
+            in a <div class="trix-content"> and ActionText template
+            comments. Trix can't initialize from that — it needs the raw
+            inner HTML body. Read it off the underlying rich_text record. %>
+        <%= rich_text_area_tag 'value', field.rich_content&.body&.to_html.to_s,
             class: 'w-full min-h-[300px] border border-gray-300 rounded-lg' %>
 
       <% when :bullets %>
@@ -158,11 +163,11 @@
     <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
       <button type="button"
               data-action="click->field-editor-modal#close"
-              class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+              class="cursor-pointer px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
         Cancel
       </button>
       <%= f.submit 'Save Changes',
-          class: 'px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700' %>
+          class: 'cursor-pointer px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700' %>
     </div>
   <% end %>
 </div>

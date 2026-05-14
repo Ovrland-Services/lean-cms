@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.10] — 2026-05-14
+
+Install-flow polish — plugs three remaining "fresh install doesn't fully work" gaps surfaced bootstrapping the demo site, all related to gem-side expectations of host-side wiring.
+
+### Added
+- **Gem now ships the Noticed table migrations.** `noticed_events` + `noticed_notifications` were the last unbundled tables the gem's admin notifications bell needed; hosts previously had to run `bin/rails noticed:install:migrations` separately. New `db/migrate/20260514000004_create_noticed_tables.rb` uses `create_table … if_not_exists: true` so installs that ran `noticed:install:migrations` independently are unaffected.
+- **Engine initializer drops an `actiontext.css` stub** into the host's `app/assets/stylesheets/` on boot (mirrors the existing `lean_cms.edit_controls_css` initializer). The gem's admin layout calls `stylesheet_link_tag "actiontext"` from day one, so the file has to exist before `bin/rails action_text:install` would normally run. Only written once — hosts can edit / replace freely.
+
+### Changed
+- **Gem partials now degrade gracefully when host User model lacks optional methods.** `_notifications_bell.html.erb` short-circuits via `current_user.respond_to?(:notifications)` — hosts that don't want Noticed integration can opt out by just leaving the association off. `_header.html.erb` falls back to `email_address.split("@").first` when `current_user.display_name` is undefined, and to `email_address` when `permissions_summary` is undefined.
+- **Install generator's "Wire up your User model" instructions now show the optional `display_name`, `permissions_summary`, and `has_many :notifications` snippets** alongside the required permission predicates, with a comment noting they're optional but the admin uses them nicely when present.
+
 ## [0.2.9] — 2026-05-14
 
 Extracts the body of `lean_cms:load_structure` out of the Rake task and into a callable service so background jobs and scripts can reseed content without `require 'rake'` / `Rails.application.load_tasks` / `task.reenable; task.invoke` gymnastics.
@@ -186,7 +198,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.9...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.10...HEAD
+[0.2.10]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.9...v0.2.10
 [0.2.9]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.6...v0.2.7
