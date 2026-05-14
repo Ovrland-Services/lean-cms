@@ -54,3 +54,24 @@
     </div>
   </div>
 </div>
+
+<!-- CMS field-editor modal. The inline-edit pencil icons (rendered into
+     editable regions by the inline-edit Stimulus controller) dispatch
+     window.cms:open-field-editor, which this modal controller listens for
+     and fetches the editor form via XHR into `content`. Without this DOM
+     present, clicks on the pencils fire the event but no controller is
+     attached anywhere to handle it. -->
+<div data-controller="field-editor-modal"
+     data-field-editor-modal-target="modal"
+     class="cms-modal hidden fixed inset-0 z-[10000] flex items-center justify-center"
+     data-action="click->field-editor-modal#handleBackdropClick">
+  <div class="absolute inset-0 bg-black opacity-50"></div>
+
+  <div class="relative bg-white rounded-lg shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div data-field-editor-modal-target="loader" class="p-12 text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <p class="mt-4 text-gray-600">Loading editor...</p>
+    </div>
+    <div data-field-editor-modal-target="content" class="p-8"></div>
+  </div>
+</div>
