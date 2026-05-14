@@ -16,6 +16,7 @@ require "rack/attack"
 
 require "lean_cms/engine"
 require "lean_cms/sync_helper"
+require "lean_cms/loader"
 
 module LeanCms
   # Table name prefix for all Lean CMS models

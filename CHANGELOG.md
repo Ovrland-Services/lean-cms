@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.9] — 2026-05-14
+
+Extracts the body of `lean_cms:load_structure` out of the Rake task and into a callable service so background jobs and scripts can reseed content without `require 'rake'` / `Rails.application.load_tasks` / `task.reenable; task.invoke` gymnastics.
+
+### Added
+- **`LeanCms::Loader` service class** at `lib/lean_cms/loader.rb`. Same behavior as `lean_cms:load_structure` but callable from anywhere:
+  ```ruby
+  result = LeanCms::Loader.new.load!
+  result.created   # => 28
+  result.updated   # => 0
+  ```
+  Optional kwargs: `yaml_path:` (default `Rails.root.join("config/lean_cms_structure.yml")`), `system_user:` (default: first super-admin or first user), `logger:` (default: silent — pass `Rails.logger` from a job or `Logger.new($stdout)` from a script). Raises `LeanCms::Loader::StructureFileMissing` or `LeanCms::Loader::NoUsersFound` instead of `exit 1` so callers can rescue meaningfully.
+
+### Changed
+- **`lean_cms:load_structure` Rake task is now a thin wrapper** that delegates to `LeanCms::Loader`. Same stdout output, same `exit 1` on the two error cases, so existing CI / deploy scripts that shell out to `rake` are unaffected. ~230 lines down to ~20.
+
 ## [0.2.8] — 2026-05-14
 
 Small ergonomic follow-up to v0.2.7.
@@ -170,7 +186,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.8...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.9...HEAD
+[0.2.9]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.5...v0.2.6
