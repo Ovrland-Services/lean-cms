@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] — 2026-05-14
+
+Doc-accuracy pass surfaced a couple of small gaps in the gem itself; rolled into this release.
+
+### Added
+- **`lean_cms:export_structure` rake task.** Dumps current `LeanCms::PageContent` records back into a YAML file shaped like `lean_cms_structure.yml`, with each field's current value emitted as its `default`. Useful for bootstrapping a second environment from a live database, or for documenting an existing install. Writes to `config/lean_cms_structure_export.yml` by default; override with `OUTPUT=path/to/file.yml`. Image attachments are not included — re-attach via the CMS UI or by copying ActiveStorage blobs.
+- **Install template now generates `posts_per_page` and `portfolio_enabled` config lines.** Both options have existed in `LeanCms::Configuration` since v0.1.0 but were missing from the generated initializer, so most installs didn't know they could be tuned.
+
 ## [0.2.2] — 2026-05-13
 
 The v0.2.1 Tailwind fix was incomplete — it stopped the RoutingError but didn't actually plug the gem's CSS into Tailwind's compile pipeline, so utilities for gem views weren't being emitted. This release adopts `tailwindcss-rails`' native engine support instead.
@@ -118,7 +126,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Ovrland-Services/lean-cms/compare/v0.1.0...v0.2.0

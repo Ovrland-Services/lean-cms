@@ -254,6 +254,93 @@ namespace :lean_cms do
     Rake::Task['lean_cms:load_structure'].invoke
   end
 
+  desc "Export current LeanCms::PageContent records to YAML (config/lean_cms_structure_export.yml)"
+  task export_structure: :environment do
+    require "yaml"
+
+    output_path = ENV["OUTPUT"] || Rails.root.join("config", "lean_cms_structure_export.yml").to_s
+
+    pages_yaml = {}
+
+    page_keys = LeanCms::PageContent.distinct.order(:page_order, :page).pluck(:page)
+
+    page_keys.each do |page_key|
+      page_scope = LeanCms::PageContent.where(page: page_key)
+      first = page_scope.order(:page_order).first
+
+      page_yaml = {
+        "display_title" => first.page_display_title.presence || page_key.titleize,
+        "page_order"    => first.page_order || 0,
+        "sections"      => {}
+      }
+
+      section_keys = page_scope.distinct.order(:section_order, :section).pluck(:section)
+      section_keys.each do |section_key|
+        section_scope = page_scope.where(section: section_key)
+        section_first = section_scope.order(:section_order).first
+
+        section_yaml = {
+          "display_title" => section_first.display_title.presence || section_key.titleize,
+          "section_order" => section_first.section_order || 0,
+          "fields"        => {}
+        }
+
+        section_scope.order(:position, :key).each do |record|
+          case record.content_type
+          when "cards"
+            items = JSON.parse(record.content.to_s) rescue []
+            section_yaml["cards"] = {
+              "type"      => "cards",
+              "max_cards" => record.options.is_a?(Hash) ? record.options["max_cards"] : nil,
+              "items"     => items
+            }.compact
+          when "bullets"
+            items = JSON.parse(record.content.to_s) rescue []
+            section_yaml["bullets"] = {
+              "type"      => "bullets",
+              "max_items" => record.options.is_a?(Hash) ? record.options["max_items"] : nil,
+              "items"     => items
+            }.compact
+          else
+            field_yaml = { "type" => record.content_type }
+            field_yaml["label"]     = record.label    if record.label.present?
+            field_yaml["position"]  = record.position if record.position.to_i != 0
+
+            # Current production value becomes the seeded default in fresh environments.
+            field_yaml["default"] =
+              if record.content_type == "rich_text"
+                record.rich_content&.to_s
+              elsif record.content_type == "boolean"
+                record.value == "true"
+              else
+                record.value
+              end
+
+            field_yaml.compact!
+
+            if record.options.is_a?(Hash)
+              field_yaml["max_length"] = record.options["max_length"] if record.options["max_length"]
+              field_yaml["options"]    = record.options["options"]    if record.options["options"]
+            end
+
+            section_yaml["fields"][record.key] = field_yaml
+          end
+        end
+
+        page_yaml["sections"][section_key] = section_yaml
+      end
+
+      pages_yaml[page_key] = page_yaml
+    end
+
+    File.write(output_path, { "pages" => pages_yaml }.to_yaml)
+    puts "Exported #{LeanCms::PageContent.count} content records across #{page_keys.size} pages to:"
+    puts "  #{output_path}"
+    puts ""
+    puts "Note: image attachments are not included in the YAML export. Re-attach them"
+    puts "      via the CMS UI or copy ActiveStorage blobs separately."
+  end
+
   desc "Show page content stats"
   task stats: :environment do
     puts "LeanCMS Page Content Statistics"
