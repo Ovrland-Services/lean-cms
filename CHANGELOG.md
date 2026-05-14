@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.7] — 2026-05-14
+
+Polish pass after putting the demo live at `demo.leancms.dev`. One bug fix, two ergonomic additions hosts can lean on instead of rebuilding themselves.
+
+### Fixed
+- **`LeanCms::PageContent.find_or_initialize_content` actually finds existing records now.** The lookup used `where(page: page, section: section, key: key).first`, but `where(page: ...)` resolves to the `belongs_to :page` association — emitting `WHERE page_id = NULL` and missing every existing record. Re-running `lean_cms:load_structure` (e.g. to pick up new YAML fields) was crashing on the SQLite unique index for every row. Now uses an explicit string-column comparison via `where("page = ? AND section = ? AND key = ?", …)`. Same shape of fix as the validation patches in v0.2.5.
+
+### Added
+- **`lean_cms/shared/_admin_bar` partial.** The fixed-top admin strip with the Inline Editing toggle, Help, Admin Dashboard, and Sign Out — previously every Lean CMS host had to copy/paste ~40 lines of ERB into their own public layout. Now hosts just `<%= render "lean_cms/shared/admin_bar" %>` from their layout and get the whole widget. The Admin Dashboard button reads its color from `LeanCms.primary_color`. Push the body's top padding down ~40px (e.g. Tailwind `pt-10`) when `current_user&.has_any_cms_permission?` is true so it doesn't overlap your header.
+- **`LeanCms.docs_url` configuration option** (default `https://leancms.dev/docs/`). Drives the new Help icon in the admin bar and the admin-side `_header.html.erb`. Override in `config/initializers/lean_cms.rb` to point at internal docs instead.
+
 ## [0.2.6] — 2026-05-14
 
 Two more demo-bootstrap fixes on top of v0.2.5 — `cards_section` was crashing with a `String#updated_at` error, and `bullets_section` was rendering silently empty even when bullet data existed.
@@ -151,7 +162,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.6...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.7...HEAD
+[0.2.7]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.3...v0.2.4
