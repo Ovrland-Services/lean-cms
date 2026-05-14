@@ -1,5 +1,11 @@
 <% return unless respond_to?(:current_user) && current_user&.has_any_cms_permission? %>
 
+<%# Trix base + Action Text overrides. Required so the field-editor modal's
+    rich_text toolbar renders as styled buttons rather than plain inline
+    text. Gated on the same has_any_cms_permission? check as the bar so
+    the stylesheet only loads for signed-in editors. %>
+<%= stylesheet_link_tag "actiontext", "data-turbo-track": "reload" %>
+
 <div class="fixed top-0 left-0 right-0 bg-gray-900 text-white py-2 px-6 text-sm z-[60]"
      data-controller="inline-edit-toggle">
   <div class="container mx-auto max-w-5xl flex items-center justify-between">
