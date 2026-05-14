@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.6] — 2026-05-14
 
-Next demo-bootstrap fix on top of v0.2.5 — `cards_section` and `bullets_section` were crashing in views with `undefined method 'updated_at' for an instance of String`.
+Two more demo-bootstrap fixes on top of v0.2.5 — `cards_section` was crashing with a `String#updated_at` error, and `bullets_section` was rendering silently empty even when bullet data existed.
 
 ### Fixed
-- **`LeanCms::BaseComponent#cache_key` handles the String-slug `page` form.** The cache key called `page&.updated_at&.to_i` assuming `page` was always a `LeanCms::Page` record. In the standard helper-driven usage `cards_section("offerings")`, `page` is the slug String (`"trips"`) and `String#updated_at` blew up. Now uses `LeanCms::PageContent.where(page: slug).maximum(:updated_at)` as the cache-key timestamp when `page` isn't a Page record — preserves `touch: true` invalidation through the legacy path.
+- **`LeanCms::BaseComponent#cache_key` handles the String-slug `page` form.** The cache key called `page&.updated_at&.to_i` assuming `page` was always a `LeanCms::Page` record. In the standard helper-driven usage `cards_section("offerings")`, `page` is the slug String (`"trips"`) and `String#updated_at` blew up. Now branches: uses `page.updated_at` when it's a Page record, falls back to `LeanCms::PageContent.where(page: slug).maximum(:updated_at)` when it's a slug — preserves `touch: true` invalidation through the legacy path.
+- **`LeanCms::BulletsSectionComponent` template rewritten.** The previous template split a `content_tag :div do %>` block across two `if can_edit_cms?` guards (open in one, close in another) plus an `<% return %>` inside the cache block. The result rendered as completely empty markup whenever bullets data was present — every bullets section on the public site showed only its heading with a large blank gap below. New template captures the `<ul>` once and wraps it in the edit-controls div only when an editor's signed in. Same behavior for editors, fixes the blank-render bug for public visitors.
+
+## [0.2.5] — 2026-05-14
 
 Two more bugs surfaced bootstrapping the demo site on top of v0.2.4. Both are pre-existing, both block a fresh install from completing `lean_cms:load_structure`.
 
