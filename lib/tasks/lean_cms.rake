@@ -158,6 +158,26 @@ namespace :lean_cms do
   # local development and production environments.
   # ============================================================================
 
+  # Guard for sync tasks that copy SQLite database files directly
+  # (pull / push / stage / start / finish). Lock / unlock / status are
+  # adapter-agnostic and don't need this — they only toggle a Setting.
+  sqlite_only = lambda do
+    adapter = ActiveRecord::Base.connection_db_config.adapter
+    return if adapter == "sqlite3"
+
+    warn <<~MSG
+      lean_cms:sync:* file-copy tasks (pull / push / stage / start / finish)
+      assume a SQLite database. The current connection uses #{adapter.inspect}.
+
+      Use your database's native dump/restore tooling instead:
+        Postgres:  pg_dump / pg_restore
+        MySQL:     mysqldump
+
+      The lock / unlock / status tasks work on any adapter and remain available.
+    MSG
+    exit 1
+  end
+
   namespace :sync do
     desc "Lock content editing on this instance"
     task lock: :environment do
@@ -201,20 +221,24 @@ namespace :lean_cms do
       end
     end
 
-    desc "Pull production database to local (run locally)"
+    desc "Pull production database to local (run locally, SQLite only)"
     task pull: :environment do
+      sqlite_only.call
       require_relative '../lean_cms/sync_helper'
       LeanCms::SyncHelper.pull_from_production
     end
 
-    desc "Push local database to production (run locally)"
+    desc "Push local database to production (run locally, SQLite only)"
     task push: :environment do
+      sqlite_only.call
       require_relative '../lean_cms/sync_helper'
       LeanCms::SyncHelper.push_to_production
     end
 
-    desc "Stage development DB as production_local for local production testing"
+    desc "Stage development DB as production_local for local production testing (SQLite only)"
     task stage: :environment do
+      sqlite_only.call
+
       dev_db    = Rails.root.join('storage', 'development.sqlite3').to_s
       prod_local = Rails.root.join('storage', 'production_local.sqlite3').to_s
 
@@ -276,8 +300,9 @@ namespace :lean_cms do
       puts "=" * 60
     end
 
-    desc "Start sync: lock production and pull database"
+    desc "Start sync: lock production and pull database (SQLite only)"
     task start: :environment do
+      sqlite_only.call
       puts "Starting content sync workflow..."
       puts "=" * 60
 
@@ -295,8 +320,9 @@ namespace :lean_cms do
       puts "=" * 60
     end
 
-    desc "Finish sync: push database and unlock production"
+    desc "Finish sync: push database and unlock production (SQLite only)"
     task finish: :environment do
+      sqlite_only.call
       puts "Finishing content sync workflow..."
       puts "=" * 60
 
