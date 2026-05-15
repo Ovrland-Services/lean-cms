@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.11] — 2026-05-14
+
+### Added
+- **`cms_google_analytics_tag` helper.** Renders a GA4 gtag.js snippet using the measurement ID stored in `LeanCms::Setting.get("google_analytics_id")`. Returns an empty string when the setting is blank — safe to call unconditionally from your layout's `<head>`. Admins set the ID via `/lean-cms/settings` without touching code. Example value: `G-XXXXXXXXXX`.
+
+  ```erb
+  <head>
+    <!-- ... -->
+    <%= cms_google_analytics_tag %>
+  </head>
+  ```
+
 ## [0.2.10] — 2026-05-14
 
 Install-flow polish — plugs three remaining "fresh install doesn't fully work" gaps surfaced bootstrapping the demo site, all related to gem-side expectations of host-side wiring.
@@ -198,7 +210,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.10...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.11...HEAD
+[0.2.11]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.10...v0.2.11
 [0.2.10]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.9...v0.2.10
 [0.2.9]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.7...v0.2.8

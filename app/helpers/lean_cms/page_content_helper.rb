@@ -163,6 +163,37 @@ module LeanCms
       render "lean_cms/shared/admin_bar"
     end
 
+    # Render the Google Analytics gtag.js snippet using the measurement ID
+    # stored in `LeanCms::Setting.get("google_analytics_id")`. Returns an
+    # empty string when the setting is blank — safe to call unconditionally
+    # from your layout's <head>.
+    #
+    # Admins set the ID via /lean-cms/settings without touching code.
+    # Example value: "G-XXXXXXXXXX".
+    #
+    # Usage in your host application.html.erb:
+    #   <head>
+    #     …
+    #     <%= cms_google_analytics_tag %>
+    #   </head>
+    def cms_google_analytics_tag
+      id = LeanCms::Setting.get("google_analytics_id")
+      return "".html_safe if id.blank?
+
+      # JSON-encode the ID so a hostile-looking setting value can't break out
+      # of the <script>. Setting values are admin-only, but defensive is cheap.
+      escaped_id = id.to_s.to_json
+
+      content_tag(:script, "", async: true,
+                  src: "https://www.googletagmanager.com/gtag/js?id=#{ERB::Util.url_encode(id)}") +
+      content_tag(:script, raw(<<~JS))
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', #{escaped_id});
+      JS
+    end
+
     # Render cards section with partial (legacy method for backward compatibility)
     # Usage: render_cards_section('about', 'certifications_standards')
     def render_cards_section(page, section, **options)
