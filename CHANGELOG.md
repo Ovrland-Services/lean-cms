@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.13] — 2026-05-15
+
+Metadata-only bump after the initial v0.2.12 RubyGems publish — no code changes.
+
+### Changed
+- **Gemspec author:** `OvrlandServices` → `Matt Thompson`. RubyGems doesn't hyperlink author names; the Ovrland Services / `hello@ovrlandservices.com` association lives in the email + homepage.
+- **Gemspec description** no longer says "Designed for SQLite-based marketing sites" — now reflects the v0.2.12 reality of "SQLite happy path with full Postgres/MySQL compatibility."
+
+### Added
+- **Gemspec metadata** gains `documentation_uri` (https://leancms.dev/docs/) and `bug_tracker_uri` (https://github.com/Ovrland-Services/lean-cms/issues) so RubyGems renders both in the sidebar.
+
 ## [0.2.12] — 2026-05-15
 
 ### Changed
@@ -218,7 +229,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.12...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.13...HEAD
+[0.2.13]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.11...v0.2.12
 [0.2.11]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.10...v0.2.11
 [0.2.10]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.9...v0.2.10
