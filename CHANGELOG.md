@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Metadata-only bump after the initial v0.2.12 RubyGems publish — no code changes.
 
 ### Changed
-- **Gemspec author:** `OvrlandServices` → `Matt Thompson`. RubyGems doesn't hyperlink author names; the Ovrland Services / `hello@ovrlandservices.com` association lives in the email + homepage.
+- **Gemspec author:** `OvrlandServices` → `Matt Thompson`. RubyGems doesn't hyperlink author names; the Ovrland Services association lives in the homepage.
+- **Gemspec email:** `hello@ovrlandservices.com` → `matt@ovrland.io` (correct personal address).
 - **Gemspec description** no longer says "Designed for SQLite-based marketing sites" — now reflects the v0.2.12 reality of "SQLite happy path with full Postgres/MySQL compatibility."
 
 ### Added
