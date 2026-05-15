@@ -3,22 +3,25 @@ require_relative "lib/lean_cms/version"
 Gem::Specification.new do |spec|
   spec.name        = "lean_cms"
   spec.version     = LeanCms::VERSION
-  spec.authors     = ["OvrlandServices"]
+  spec.authors     = ["Matt Thompson"]
   spec.email       = ["hello@ovrlandservices.com"]
 
   spec.summary     = "Lightweight Rails CMS with in-context editing for marketing sites."
   spec.description = "Lean CMS is a Rails Engine that adds in-context content editing, " \
                      "page content management, blog/portfolio, settings, and notifications " \
-                     "to any Rails 8 application. Designed for SQLite-based marketing sites."
+                     "to any Rails 8 application. Built for marketing sites — SQLite happy " \
+                     "path with full Postgres/MySQL compatibility."
   spec.homepage    = "https://leancms.dev"
   spec.license     = "MIT"
 
   spec.required_ruby_version = ">= 3.2.0"
 
   spec.metadata = {
-    "homepage_uri"    => "https://leancms.dev",
-    "source_code_uri" => "https://github.com/Ovrland-Services/lean-cms",
-    "changelog_uri"   => "https://github.com/Ovrland-Services/lean-cms/blob/main/CHANGELOG.md"
+    "homepage_uri"      => "https://leancms.dev",
+    "source_code_uri"   => "https://github.com/Ovrland-Services/lean-cms",
+    "changelog_uri"     => "https://github.com/Ovrland-Services/lean-cms/blob/main/CHANGELOG.md",
+    "documentation_uri" => "https://leancms.dev/docs/",
+    "bug_tracker_uri"   => "https://github.com/Ovrland-Services/lean-cms/issues"
   }
 
   spec.files = Dir[
