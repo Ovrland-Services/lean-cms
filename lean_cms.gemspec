@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.name        = "lean_cms"
   spec.version     = LeanCms::VERSION
   spec.authors     = ["Matt Thompson"]
-  spec.email       = ["hello@ovrlandservices.com"]
+  spec.email       = ["matt@ovrland.io"]
 
   spec.summary     = "Lightweight Rails CMS with in-context editing for marketing sites."
   spec.description = "Lean CMS is a Rails Engine that adds in-context content editing, " \
