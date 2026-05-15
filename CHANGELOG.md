@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.12] — 2026-05-15
+
+### Changed
+- **`lean_cms:sync:{pull,push,stage,start,finish}` now abort with a clear message on non-SQLite adapters.** These tasks `cp` SQLite database files directly and have always been SQLite-specific; the new guard prevents accidental no-ops or confusing errors on Postgres/MySQL hosts. `lean_cms:sync:{lock,unlock,status,workflow}` are unaffected — they only toggle a `LeanCms::Setting` and work on any adapter. Task descriptions updated to reflect the SQLite-only scope.
+
+### Verified
+- **Postgres compatibility POC.** Fresh Rails 8 + `--database=postgresql` host, install generator, all 7 gem-shipped migrations (`lean_cms_*`, PaperTrail, Action Text, Active Storage, Noticed), `lean_cms:load_structure`, and the rich_text association all worked end-to-end with zero gem changes. The gem's schema is Rails-DSL-only — happy path remains SQLite, but Postgres (and likely MySQL) installs work out of the box for hosts that prefer them. Docs at leancms.dev to be updated separately.
+
 ## [0.2.11] — 2026-05-14
 
 ### Added
@@ -210,7 +218,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.11...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.12...HEAD
+[0.2.12]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.11...v0.2.12
 [0.2.11]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.10...v0.2.11
 [0.2.10]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.9...v0.2.10
 [0.2.9]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.8...v0.2.9
