@@ -14,9 +14,9 @@
 
 Lean CMS is a Rails Engine that adds in-context content editing, page content
 management, blog & portfolio, settings, role-based authentication, and
-notifications to any Rails 8 application. It's designed for SQLite-based
-marketing sites: server-rendered, single-binary deploys, no separate CMS to
-host.
+notifications to any Rails 8 application. It's designed for marketing sites:
+server-rendered, no separate CMS service to host, and one rake task to
+seed your whole site structure from YAML.
 
 ## Why Lean CMS
 
@@ -50,7 +50,6 @@ Then in `app/controllers/application_controller.rb`:
 
 ```ruby
 include LeanCms::Authentication
-include Pundit::Authorization
 ```
 
 And in `app/helpers/application_helper.rb`:
@@ -60,6 +59,8 @@ include LeanCms::PageContentHelper
 ```
 
 See the [Getting Started guide](https://leancms.dev/docs/getting-started/installation/) for the full setup including User-model requirements and YAML structure.
+
+> **Heads up — authentication.** Lean CMS ships its own auth (login at `/lean-cms/login`, sessions, magic-link invites). It coexists cleanly with Rails 8's built-in `bin/rails generate authentication` (the install generator detects + warns). **If you're already using Devise or another auth gem**, the gem currently still adds a second login screen — first-class host-auth integration is the v0.3 milestone. See [issue tracker](https://github.com/Ovrland-Services/lean-cms/issues) for status.
 
 ## A taste of the helper API
 
@@ -87,7 +88,19 @@ See the [Getting Started guide](https://leancms.dev/docs/getting-started/install
 
 - Ruby ≥ 3.2
 - Rails ≥ 8.0
-- SQLite3 (the gem assumes a SQLite host; see [SQLite Production](https://leancms.dev/docs/deployment/sqlite/))
+- SQLite, PostgreSQL, or MySQL (SQLite is the happy path; see [Database support](https://leancms.dev/docs/deployment/database-support/) for the compatibility matrix)
+
+## Roadmap
+
+Lean CMS is `0.2.x` — pre-1.0, API may shift between minors. Public roadmap:
+
+- **v0.2.x** _(current)_: feature-complete CMS surface, in-context editing, hourly-resettable demo. Ships its own auth.
+- **v0.3**: host-auth adapter pattern — first-class integration with Devise / Rodauth / custom-auth hosts. Sibling [`lean-cms-devise-example`](https://github.com/Ovrland-Services/lean-cms) repo as the proving ground + public reference.
+- **v0.4** _(idea stage)_: AI-powered `lean_cms-scraper` companion gem — `bin/rails generate lean_cms:scrape URL=...` writes a starter `lean_cms_structure.yml` from an existing live website.
+
+## Demo
+
+Live at [demo.leancms.dev](https://demo.leancms.dev) — sign in with `demo@leancms.dev` / `demo123` and edit anything. Content resets every hour at `:00 UTC`. Source: [`Ovrland-Services/lean-cms-demo`](https://github.com/Ovrland-Services/lean-cms-demo).
 
 ## License
 
