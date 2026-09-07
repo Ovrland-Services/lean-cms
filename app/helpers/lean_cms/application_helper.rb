@@ -8,16 +8,23 @@ module LeanCms
       "##{rgb.map { |channel| channel.to_s(16).rjust(2, '0') }.join}"
     end
 
-    # Format date for display
+    # Format date for display, following the host app's I18n.locale.
+    # The gem ships the :lean_cms_date format (date.formats.lean_cms_date) for
+    # :en and :"pt-BR"; hosts can override it per-locale in their own locale
+    # files. Falls back to Date#to_s rather than raising when the active
+    # locale doesn't define the format.
     def format_date(date)
       return unless date
-      date.strftime("%B %d, %Y")
+      return date.to_s unless I18n.exists?("date.formats.lean_cms_date")
+      I18n.l(date, format: :lean_cms_date)
     end
 
-    # Format datetime for display
+    # Format datetime for display, following the host app's I18n.locale.
+    # See format_date for the format key and fallback behavior.
     def format_datetime(datetime)
       return unless datetime
-      datetime.strftime("%B %d, %Y at %I:%M %p")
+      return datetime.to_s unless I18n.exists?("time.formats.lean_cms_datetime")
+      I18n.l(datetime, format: :lean_cms_datetime)
     end
 
     # Status badge colors
