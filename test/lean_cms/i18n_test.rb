@@ -42,8 +42,8 @@ class LeanCmsI18nTest < ActiveSupport::TestCase
     end
 
     I18n.with_locale(:"pt-BR") do
-      assert_equal "07 de setembro de 2026", format_date(datetime.to_date)
-      assert_equal "07 de setembro de 2026 às 15:30", format_datetime(datetime)
+      assert_equal "7 de setembro de 2026", format_date(datetime.to_date)
+      assert_equal "7 de setembro de 2026 às 15:30", format_datetime(datetime)
     end
   end
 

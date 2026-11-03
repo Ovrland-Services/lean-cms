@@ -84,6 +84,31 @@ See the [Getting Started guide](https://leancms.dev/docs/getting-started/install
       class: "rounded-2xl shadow-lg" %>
 ```
 
+## Localization (i18n)
+
+The admin ships with English (`en`) and Brazilian Portuguese (`pt-BR`) locales and follows the host's `I18n.locale` — no extra setup needed. To run the admin in Portuguese:
+
+```ruby
+# config/application.rb
+config.i18n.default_locale = :"pt-BR"
+```
+
+> **Coverage:** only the dashboard is translated so far; the rest of the admin is still English-only and is being translated in follow-up releases.
+
+Dates rendered by the admin (`format_date` / `format_datetime`) use two named formats you can override per locale in your own `config/locales/*.yml`:
+
+```yaml
+pt-BR:
+  date:
+    formats:
+      lean_cms_date: "%d/%m/%Y"
+  time:
+    formats:
+      lean_cms_datetime: "%d/%m/%Y %H:%M"
+```
+
+Your app's locale files take precedence over the gem's, so you can override any `lean_cms.*` string (or the pt-BR month/day names the gem ships) the same way. To add a new language, copy `config/locales/lean_cms.en.yml` from the gem, translate it, and drop it into your app — or open a PR to ship it upstream.
+
 ## Requirements
 
 - Ruby ≥ 3.2

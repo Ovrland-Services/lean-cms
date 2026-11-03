@@ -9,7 +9,7 @@ pt-BR:
     day_names: [domingo, segunda-feira, terça-feira, quarta-feira, quinta-feira, sexta-feira, sábado]
     abbr_day_names: [dom, seg, ter, qua, qui, sex, sáb]
     formats:
-      lean_cms_date: "%d de %B de %Y"
+      lean_cms_date: "%-d de %B de %Y"
 
   lean_cms:
     statuses:
@@ -56,4 +56,4 @@ pt-BR:
 
   time:
     formats:
-      lean_cms_datetime: "%d de %B de %Y às %H:%M"
+      lean_cms_datetime: "%-d de %B de %Y às %H:%M"
