@@ -1,0 +1,50 @@
+en:
+  lean_cms:
+    statuses:
+      published: Published
+      draft: Draft
+      new_submission: New submission
+      read: Read
+      replied: Replied
+      archived: Archived
+
+    dashboard:
+      index:
+        title: Dashboard
+
+        stats:
+          published_posts: Published Posts
+          draft_posts: Draft Posts
+          unread_messages: Unread Messages
+          page_sections: Page Sections
+
+        recent_posts:
+          title: Recent Posts
+          view_all: View All
+          by: "%{datetime} by %{author}"
+          empty: No posts yet
+          create_first: Create your first post
+
+        recent_submissions:
+          title: Recent Submissions
+          view_all: View All
+          empty: No submissions yet
+
+        quick_actions:
+          title: Quick Actions
+          create_post:
+            label: Create Post
+            description: New blog post or portfolio item
+          edit_pages:
+            label: Edit Pages
+            description: Update page content
+          view_site:
+            label: View Site
+            description: See your live website
+
+  date:
+    formats:
+      lean_cms_date: "%B %d, %Y"
+  time:
+    formats:
+      lean_cms_datetime: "%B %d, %Y at %I:%M %p"

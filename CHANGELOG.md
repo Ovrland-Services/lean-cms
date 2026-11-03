@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Rails i18n support** — the engine now ships `config/locales/lean_cms.en.yml` and `config/locales/lean_cms.pt-BR.yml`, picked up automatically by `Rails::Engine` (no host config needed). The admin follows the host's `I18n.locale`; hosts opt into Portuguese via `config.i18n.default_locale = :"pt-BR"`. Keys live under the `lean_cms.*` namespace, starting with the dashboard page and shared `lean_cms.statuses.*` labels. pt-BR month/day names ship in-gem, so no `rails-i18n` dependency is required.
+- **`format_date` / `format_datetime` helpers are locale-aware** — they now localize via `I18n.l` with the `date.formats.lean_cms_date` / `time.formats.lean_cms_datetime` formats (overridable per-locale by hosts). English output is unchanged.
+
+### Notes
+- **Partial coverage: only the dashboard is translated so far.** The rest of the admin (sidebar/layout, posts, pages, settings, auth screens, mailers) is still English-only and will be translated in follow-up releases. Because `format_date` / `format_datetime` are shared helpers, pt-BR hosts will already see Portuguese dates on otherwise-English pages (e.g. the activity log at `/lean-cms/activity`) until those pages are translated.
+
 ## [0.2.14] — 2026-11-03
 
 Security maintenance release — no feature or behavior changes.

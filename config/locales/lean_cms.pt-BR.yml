@@ -1,0 +1,59 @@
+pt-BR:
+  # Month/day names needed by I18n.l. Lean CMS ships these in-gem (instead of
+  # depending on rails-i18n) so hosts that don't already configure a pt-BR
+  # locale get correct date rendering out of the box. Hosts already using
+  # rails-i18n can shadow these keys freely — their locale files win.
+  date:
+    month_names: [~, janeiro, fevereiro, março, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro]
+    abbr_month_names: [~, jan, fev, mar, abr, mai, jun, jul, ago, set, out, nov, dez]
+    day_names: [domingo, segunda-feira, terça-feira, quarta-feira, quinta-feira, sexta-feira, sábado]
+    abbr_day_names: [dom, seg, ter, qua, qui, sex, sáb]
+    formats:
+      lean_cms_date: "%-d de %B de %Y"
+
+  lean_cms:
+    statuses:
+      published: Publicado
+      draft: Rascunho
+      new_submission: Novo envio
+      read: Lido
+      replied: Respondido
+      archived: Arquivado
+
+    dashboard:
+      index:
+        title: Painel
+
+        stats:
+          published_posts: Posts publicados
+          draft_posts: Rascunhos
+          unread_messages: Mensagens não lidas
+          page_sections: Seções de página
+
+        recent_posts:
+          title: Posts recentes
+          view_all: Ver todos
+          by: "%{datetime} por %{author}"
+          empty: Nenhum post ainda
+          create_first: Crie seu primeiro post
+
+        recent_submissions:
+          title: Envios recentes
+          view_all: Ver todos
+          empty: Nenhum envio ainda
+
+        quick_actions:
+          title: Ações rápidas
+          create_post:
+            label: Criar post
+            description: Novo post de blog ou item de portfólio
+          edit_pages:
+            label: Editar páginas
+            description: Atualize o conteúdo das páginas
+          view_site:
+            label: Ver site
+            description: Veja seu site no ar
+
+  time:
+    formats:
+      lean_cms_datetime: "%-d de %B de %Y às %H:%M"
