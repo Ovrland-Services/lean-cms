@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.14] — 2026-11-03
+
+Security maintenance release — no feature or behavior changes.
+
+### Security
+- **`view_component` minimum raised to `>= 4.14`** (still `~> 4.0`). Versions before 4.12 are affected by an `around_render` HTML-safety bypass (CVE-2026-54498, high) and stale render context on reused component instances (CVE-2026-54497); 4.14 completes the fix for slot/`with_content` state leaking across reused instances (GHSA-8qw7-6phv-7q6p). Hosts on a recent 4.x are unaffected by the bump.
+- **Host apps: keep Rails patched.** Lean CMS uses Active Storage variants, which are affected by an arbitrary file read / RCE advisory in variant processing. Run Rails `>= 8.0.5.1` (8.0.x) or `>= 8.1.3.1` (8.1.x). The gemspec's `rails ~> 8.0` constraint is unchanged since no single constraint excludes every affected version across both series; `bundle-audit` in your app will flag it.
+
+### Changed
+- `.ruby-version` (local development) bumped `3.4.7` → `3.4.12`, matching the floating Ruby 3.4 now used in CI.
+
 ## [0.2.13] — 2026-05-15
 
 Metadata-only bump after the initial v0.2.12 RubyGems publish — no code changes.
@@ -230,7 +241,8 @@ Hosts moving from in-app auth to gem auth should:
 - `lean_cms:stats` rake task — prints content field counts by page
 - `LeanCms::SyncHelper` — SQLite database sync between local and production
 
-[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.13...HEAD
+[Unreleased]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.14...HEAD
+[0.2.14]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.13...v0.2.14
 [0.2.13]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.11...v0.2.12
 [0.2.11]: https://github.com/Ovrland-Services/lean-cms/compare/v0.2.10...v0.2.11
