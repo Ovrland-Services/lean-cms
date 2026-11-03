@@ -15,7 +15,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.4.7"
+          ruby-version: "3.4"
           bundler-cache: true
 
       - name: gem build smoke test
@@ -42,7 +42,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.4.7"
+          ruby-version: "3.4"
           bundler-cache: true
 
       - name: Run Minitest
