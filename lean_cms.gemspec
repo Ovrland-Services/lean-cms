@@ -41,7 +41,7 @@ Gem::Specification.new do |spec|
 
   # Core CMS dependencies
   spec.add_dependency "paper_trail",     "~> 17.0"  # version tracking / undo
-  spec.add_dependency "view_component",  "~> 4.0"   # component-based views
+  spec.add_dependency "view_component",  "~> 4.0", ">= 4.14"  # component-based views; >= 4.14 for security fixes
   spec.add_dependency "kaminari",        "~> 1.2"   # pagination
   spec.add_dependency "pundit",          "~> 2.5"   # authorization policies
   spec.add_dependency "noticed",         "~> 2.0"   # in-app + email/SMS notifications
