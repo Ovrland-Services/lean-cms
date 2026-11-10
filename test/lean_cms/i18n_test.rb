@@ -2,6 +2,7 @@ require_relative "../test_helper"
 
 class LeanCmsI18nTest < ActiveSupport::TestCase
   include LeanCms::ApplicationHelper
+  include ActionView::Helpers::DateHelper
 
   GEM_LOCALES = {
     en: LeanCms::Engine.root.join("config/locales/lean_cms.en.yml"),
@@ -44,6 +45,13 @@ class LeanCmsI18nTest < ActiveSupport::TestCase
     I18n.with_locale(:"pt-BR") do
       assert_equal "7 de setembro de 2026", format_date(datetime.to_date)
       assert_equal "7 de setembro de 2026 às 15:30", format_datetime(datetime)
+    end
+  end
+
+  test "time_ago_in_words works in pt-BR without rails-i18n" do
+    I18n.with_locale(:"pt-BR") do
+      assert_equal "3 dias", time_ago_in_words(3.days.ago)
+      assert_equal "cerca de 1 hora", time_ago_in_words(1.hour.ago)
     end
   end
 

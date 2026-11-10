@@ -1,7 +1,7 @@
 require_relative "../test_helper"
 require "action_dispatch/testing/integration"
 
-class DashboardI18nTest < ActionDispatch::IntegrationTest
+class AdminI18nTest < ActionDispatch::IntegrationTest
   setup do
     LeanCms::Session.delete_all
     User.delete_all
@@ -32,5 +32,27 @@ class DashboardI18nTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Posts publicados"
     assert_includes response.body, "Ações rápidas"
     refute_includes response.body, "translation missing"
+  end
+
+  test "renders the admin layout in pt-BR" do
+    I18n.with_locale(:"pt-BR") { get "/lean-cms" }
+
+    assert_includes response.body, '<html lang="pt-BR">'
+    assert_includes response.body, "Envios de formulário"
+    assert_includes response.body, "Registro de atividades"
+    assert_includes response.body, "Novo post"
+    assert_includes response.body, "Sair"
+    refute_includes response.body, "translation missing"
+  end
+
+  test "renders the content lock banner in pt-BR" do
+    LeanCms::Setting.lock_content!("Sincronizando")
+    I18n.with_locale(:"pt-BR") { get "/lean-cms" }
+
+    assert_includes response.body, "A edição de conteúdo está bloqueada."
+    assert_match(/Bloqueada há menos de um minuto\./, response.body)
+    assert_includes response.body, "Desbloquear"
+  ensure
+    LeanCms::Setting.unlock_content!
   end
 end

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= I18n.locale %>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,14 +70,14 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
             </svg>
             <div>
-              <span class="font-semibold text-amber-800">Content editing is locked.</span>
+              <span class="font-semibold text-amber-800"><%= t("lean_cms.content_lock.banner.locked") %></span>
               <span class="text-amber-700 ml-1"><%= lock_info[:reason] %></span>
               <% if lock_info[:locked_at].present? %>
-                <span class="text-amber-600 text-sm ml-2">Locked <%= time_ago_in_words(Time.parse(lock_info[:locked_at])) %> ago.</span>
+                <span class="text-amber-600 text-sm ml-2"><%= t("lean_cms.content_lock.banner.locked_ago", time: time_ago_in_words(Time.parse(lock_info[:locked_at]))) %></span>
               <% end %>
             </div>
           </div>
-          <%= button_to 'Unlock', lean_cms_unlock_content_path, method: :post,
+          <%= button_to t("lean_cms.content_lock.banner.unlock"), lean_cms_unlock_content_path, method: :post,
                 class: "text-sm font-medium px-3 py-1 rounded bg-amber-200 hover:bg-amber-300 text-amber-900 transition-colors" %>
         </div>
       <% end %>
