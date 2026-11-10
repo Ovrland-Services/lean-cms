@@ -47,3 +47,9 @@ jobs:
 
       - name: Run Minitest
         run: bundle exec rake test
+
+      - name: i18n-tasks
+        run: |
+          bundle exec i18n-tasks missing
+          bundle exec i18n-tasks unused
+          bundle exec i18n-tasks check-consistent-interpolations

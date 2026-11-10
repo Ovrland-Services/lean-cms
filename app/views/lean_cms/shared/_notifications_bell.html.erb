@@ -24,13 +24,13 @@
        x-cloak
        class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-hidden flex flex-col">
     <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+      <h3 class="text-sm font-semibold text-gray-900"><%= t(".title") %></h3>
       <% if unread_count > 0 %>
         <%= button_to mark_all_as_read_lean_cms_notifications_path, 
             method: :patch,
             class: "text-xs text-[#b82025] hover:text-[#a01c20] font-medium",
             data: { turbo_frame: "_top" } do %>
-          Mark all as read
+          <%= t(".mark_all_as_read") %>
         <% end %>
       <% end %>
     </div>
@@ -48,13 +48,13 @@
                 </div>
                 <div class="ml-3 flex-1 min-w-0">
                   <p class="text-sm font-medium text-gray-900 truncate">
-                    <%= notification.params[:title] || 'Contact Form Submission' %>
+                    <%= notification.params[:title] || t(".default_title") %>
                   </p>
                   <p class="text-xs text-gray-500 mt-1">
                     <%= notification.params[:message] || notification.message %>
                   </p>
                   <p class="text-xs text-gray-400 mt-1">
-                    <%= time_ago_in_words(notification.created_at) %> ago
+                    <%= t(".time_ago", time: time_ago_in_words(notification.created_at)) %>
                   </p>
                 </div>
               </div>
@@ -66,7 +66,7 @@
           <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
           </svg>
-          <p class="mt-2 text-sm text-gray-500">No new notifications</p>
+          <p class="mt-2 text-sm text-gray-500"><%= t(".empty") %></p>
         </div>
       <% end %>
     </div>
@@ -76,7 +76,7 @@
         <%= link_to lean_cms_notifications_path, 
             class: "block text-center text-sm font-medium text-[#b82025] hover:text-[#a01c20]",
             data: { turbo_frame: "_top" } do %>
-          View all notifications
+          <%= t(".view_all") %>
         <% end %>
       </div>
     <% end %>

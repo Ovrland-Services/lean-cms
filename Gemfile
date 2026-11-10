@@ -8,4 +8,5 @@ group :development, :test do
   gem "bcrypt", "~> 3.1"
   gem "factory_bot_rails"
   gem "debug"
+  gem "i18n-tasks", "~> 1.0", require: false
 end

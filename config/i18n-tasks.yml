@@ -1,0 +1,21 @@
+base_locale: en
+locales: [en, pt-BR]
+
+data:
+  read:
+    - config/locales/lean_cms.%{locale}.yml
+
+search:
+  paths:
+    - app/
+
+ignore_unused:
+  - "lean_cms.statuses.*"
+  - "date.*"
+  - "time.*"
+  - "datetime.*"
+
+# Rails ships these for :en.
+ignore_missing:
+  - "date.*"
+  - "datetime.*"

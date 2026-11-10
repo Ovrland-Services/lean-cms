@@ -42,6 +42,50 @@ en:
             label: View Site
             description: See your live website
 
+    content_lock:
+      banner:
+        locked: Content editing is locked.
+        locked_ago: "Locked %{time} ago."
+        unlock: Unlock
+
+    shared:
+      sidebar:
+        dashboard: Dashboard
+        content: Content
+        posts: Blog & Portfolio
+        page_contents: Page Content
+        form_submissions: Form Submissions
+        administration: Administration
+        users: Users
+        notification_settings: Notification Settings
+        activity: Activity Log
+
+      header:
+        default_title: Dashboard
+        new_post: New Post
+        docs: Lean CMS documentation
+        help: Help
+        view_site: View Site
+        settings: Settings
+        sign_out: Sign Out
+
+      notifications_bell:
+        title: Notifications
+        mark_all_as_read: Mark all as read
+        default_title: Contact Form Submission
+        time_ago: "%{time} ago"
+        empty: No new notifications
+        view_all: View all notifications
+
+      admin_bar:
+        logged_in_as: "Logged in as:"
+        inline_editing: Inline Editing
+        docs: Documentation
+        help: Help
+        admin_dashboard: Admin Dashboard
+        sign_out: Sign Out
+        loading_editor: Loading editor...
+
   date:
     formats:
       lean_cms_date: "%B %d, %Y"

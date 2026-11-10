@@ -93,7 +93,7 @@ The admin ships with English (`en`) and Brazilian Portuguese (`pt-BR`) locales a
 config.i18n.default_locale = :"pt-BR"
 ```
 
-> **Coverage:** only the dashboard is translated so far; the rest of the admin is still English-only and is being translated in follow-up releases.
+> **Coverage:** only the dashboard and the admin layout (sidebar, header, admin bar) are translated so far; the rest of the admin is still English-only and is being translated in follow-up releases.
 
 Dates rendered by the admin (`format_date` / `format_datetime`) use two named formats you can override per locale in your own `config/locales/*.yml`:
 
