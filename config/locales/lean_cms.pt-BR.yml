@@ -69,7 +69,7 @@ pt-BR:
         form_submissions: Envios de formulário
         administration: Administração
         users: Usuários
-        notification_settings: Notificações
+        notification_settings: Config. de notificações
         activity: Registro de atividades
 
       header:
@@ -88,15 +88,6 @@ pt-BR:
         time_ago: "há %{time}"
         empty: Nenhuma notificação nova
         view_all: Ver todas as notificações
-
-      admin_bar:
-        logged_in_as: "Conectado como:"
-        inline_editing: Edição inline
-        docs: Documentação
-        help: Ajuda
-        admin_dashboard: Painel admin
-        sign_out: Sair
-        loading_editor: Carregando editor...
 
   time:
     formats:

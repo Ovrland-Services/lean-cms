@@ -77,15 +77,6 @@ en:
         empty: No new notifications
         view_all: View all notifications
 
-      admin_bar:
-        logged_in_as: "Logged in as:"
-        inline_editing: Inline Editing
-        docs: Documentation
-        help: Help
-        admin_dashboard: Admin Dashboard
-        sign_out: Sign Out
-        loading_editor: Loading editor...
-
   date:
     formats:
       lean_cms_date: "%B %d, %Y"

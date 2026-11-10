@@ -10,11 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Rails i18n support** — the engine now ships `config/locales/lean_cms.en.yml` and `config/locales/lean_cms.pt-BR.yml`, picked up automatically by `Rails::Engine` (no host config needed). The admin follows the host's `I18n.locale`; hosts opt into Portuguese via `config.i18n.default_locale = :"pt-BR"`. Keys live under the `lean_cms.*` namespace, starting with the dashboard page and shared `lean_cms.statuses.*` labels. pt-BR month/day names ship in-gem, so no `rails-i18n` dependency is required.
 - **`format_date` / `format_datetime` helpers are locale-aware** — they now localize via `I18n.l` with the `date.formats.lean_cms_date` / `time.formats.lean_cms_datetime` formats (overridable per-locale by hosts). English output is unchanged.
-- **Admin layout translated** — sidebar, header, notifications bell, content-lock banner, and the front-end admin bar (`cms_admin_bar`) now use `lean_cms.shared.*` / `lean_cms.content_lock.*` keys. The admin layout's `<html lang>` follows `I18n.locale`. pt-BR `datetime.distance_in_words` ships in-gem so `time_ago_in_words` reads naturally ("há 3 dias").
+- **Admin layout translated** — sidebar, header, notifications bell, and content-lock banner now use `lean_cms.shared.*` / `lean_cms.content_lock.*` keys. The admin layout's `<html lang>` follows `I18n.locale`. pt-BR `datetime.distance_in_words` ships in-gem so `time_ago_in_words` reads naturally ("há 3 dias").
 - **`i18n-tasks` check in CI** — fails on keys used in views but missing from a locale, unused keys, and inconsistent interpolations.
 
 ### Notes
-- **Partial coverage: only the dashboard and the admin layout (sidebar, header, admin bar) are translated so far.** The rest of the admin (posts, pages, settings, auth screens, mailers) is still English-only and will be translated in follow-up releases. Because `format_date` / `format_datetime` are shared helpers, pt-BR hosts will already see Portuguese dates on otherwise-English pages (e.g. the activity log at `/lean-cms/activity`) until those pages are translated.
+- **Partial coverage: only the dashboard and the admin layout (sidebar, header) are translated so far.** The rest of the admin (posts, pages, settings, auth screens, mailers) is still English-only and will be translated in follow-up releases. Because `format_date` / `format_datetime` are shared helpers, pt-BR hosts will already see Portuguese dates on otherwise-English pages (e.g. the activity log at `/lean-cms/activity`) until those pages are translated.
 
 ## [0.2.14] — 2026-11-03
 
